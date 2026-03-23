@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 navLinks.innerHTML = `
                     <span>${user.name}님</span>
+                    <a href="reservation.html">내 예약</a>
                     <a href="mypage.html">마이페이지</a>
                     <a href="#" id="logout-btn">로그아웃</a>
                 `;

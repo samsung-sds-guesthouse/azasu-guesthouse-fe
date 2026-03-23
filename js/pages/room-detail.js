@@ -50,8 +50,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const confirmation = confirm('보증금을 입금해야 최종적으로 예약이 완료됩니다. 정말 예약하시겠습니까? 보증금은 환불이 되지 않습니다.');
             if(confirmation) {
                 // Dummy reservation
-                alert('예약이 완료되었습니다 (상태: PENDING). 마이페이지로 이동합니다.');
-                window.location.href = 'mypage.html';
+                alert('예약이 완료되었습니다 (상태: PENDING). 내 예약 페이지로 이동합니다.');
+                window.location.href = 'reservation.html';
             }
         });
         

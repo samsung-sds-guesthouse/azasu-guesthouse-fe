@@ -1,6 +1,8 @@
 async function login(loginId, password) {
   const TEMP_GUEST_LOGIN_ID = "guest1234";
   const TEMP_GUEST_PASSWORD = "password1234";
+  const TEMP_ADMIN_LOGIN_ID = "admin1234";
+  const TEMP_ADMIN_PASSWORD = "password1234";
 
   try {
     const response = await fetchApi("/api/v1/auth/login", {
@@ -27,6 +29,17 @@ async function login(loginId, password) {
       role: (data && data.role) || (response && response.role) || "GUEST",
     };
   } catch (error) {
+    if (
+      loginId === TEMP_ADMIN_LOGIN_ID &&
+      password === TEMP_ADMIN_PASSWORD
+    ) {
+      return {
+        msg: "SUCCESS",
+        name: "테스트 관리자",
+        role: "ADMIN",
+      };
+    }
+
     if (
       loginId === TEMP_GUEST_LOGIN_ID &&
       password === TEMP_GUEST_PASSWORD

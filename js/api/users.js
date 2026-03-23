@@ -11,6 +11,14 @@ function encodeQuery(params) {
   return queryString ? `?${queryString}` : "";
 }
 
+function unwrapResponse(response) {
+  if (response && typeof response === "object" && response.data) {
+    return response.data;
+  }
+
+  return response;
+}
+
 async function signupUser({ login_id, password, name, phone }) {
   return fetchApi("/api/v1/auth/signup", {
     method: "POST",
@@ -72,4 +80,57 @@ async function verifySmsCode(phone, code) {
     success: /^\d{6}$/.test(code),
     phone,
   });
+}
+
+async function getMyInfo() {
+  const response = await fetchApi("/api/v1/auth/my-info", {
+    method: "GET",
+  });
+
+  const data = unwrapResponse(response);
+  const msg = extractApiMessage(response, "FAIL");
+
+  if (msg !== "SUCCESS") {
+    throw new Error("회원 정보를 불러오지 못했습니다.");
+  }
+
+  return {
+    msg,
+    login_id: data.login_id || "",
+    name: data.name || "",
+    phone: data.phone || "",
+  };
+}
+
+async function changePassword({ old_password, new_password }) {
+  const response = await fetchApi("/api/v1/auth/change-pw", {
+    method: "POST",
+    body: JSON.stringify({
+      old_password,
+      new_password,
+    }),
+  });
+
+  const msg = extractApiMessage(response, "FAIL");
+
+  if (msg !== "SUCCESS") {
+    throw new Error("비밀번호 변경에 실패했습니다.");
+  }
+
+  return { msg };
+}
+
+async function withdrawUser(password) {
+  const response = await fetchApi("/api/v1/auth/withdraw", {
+    method: "POST",
+    body: JSON.stringify({ password }),
+  });
+
+  const msg = extractApiMessage(response, "FAIL");
+
+  if (msg !== "SUCCESS") {
+    throw new Error("회원 탈퇴에 실패했습니다.");
+  }
+
+  return { msg };
 }

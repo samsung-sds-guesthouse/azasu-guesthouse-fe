@@ -9,23 +9,32 @@ const API_BASE_URL = 'https://api.example.com'; // Replace with actual API URL
  */
 async function fetchApi(endpoint, options = {}) {
     const url = `${API_BASE_URL}${endpoint}`;
+    const isFormData = options.body instanceof FormData;
     const headers = {
-        'Content-Type': 'application/json',
         ...options.headers,
     };
 
-    // Add authorization token if available
+    if (!isFormData && !headers['Content-Type']) {
+        headers['Content-Type'] = 'application/json';
+    }
+
     const token = sessionStorage.getItem('token');
     if (token) {
         headers['Authorization'] = `Bearer ${token}`;
     }
 
     try {
-        const response = await fetch(url, { ...options, headers });
+        const response = await fetch(url, {
+            ...options,
+            credentials: 'include',
+            headers,
+        });
+
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({ message: 'An unknown error occurred' }));
             throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
         }
+
         return await response.json();
     } catch (error) {
         console.error('API Error:', error);

@@ -1,10 +1,53 @@
-document.addEventListener('DOMContentLoaded', () => {
-    checkAdmin(); // Redirect if not admin
+document.addEventListener('DOMContentLoaded', async () => {
+    checkAdmin();
 
     const roomListContainer = document.getElementById('admin-room-list');
+    const reservationListContainer = document.getElementById('admin-reservation-list');
+    const roomsSection = document.getElementById('admin-rooms-section');
+    const reservationsSection = document.getElementById('admin-reservations-section');
+    const navButtons = document.querySelectorAll('.admin-nav-btn');
 
-    async function loadRooms() {
-        const rooms = await getRooms(); // Assuming getRooms fetches all rooms for admin
+    const SECTION = {
+        ROOMS: 'rooms',
+        RESERVATIONS: 'reservations',
+    };
+
+    const RESERVATION_STATUS_LABELS = {
+        PENDING: '대기',
+        CONFIRMED: '확인',
+        CANCELLED: '취소',
+    };
+
+    function setActiveSection(sectionName) {
+        const showRooms = sectionName === SECTION.ROOMS;
+        roomsSection.hidden = !showRooms;
+        reservationsSection.hidden = showRooms;
+
+        navButtons.forEach((button) => {
+            const isActive = button.dataset.section === sectionName;
+            button.classList.toggle('active', isActive);
+            button.setAttribute('aria-pressed', String(isActive));
+        });
+    }
+
+    function renderLoading(container, message) {
+        container.innerHTML = `<p>${escapeHTML(message)}</p>`;
+    }
+
+    function renderEmpty(container, message) {
+        container.innerHTML = `<p>${escapeHTML(message)}</p>`;
+    }
+
+    function renderError(container, message) {
+        container.innerHTML = `<p>${escapeHTML(message)}</p>`;
+    }
+
+    function renderRooms(rooms) {
+        if (rooms.length === 0) {
+            renderEmpty(roomListContainer, '등록된 객실이 없습니다.');
+            return;
+        }
+
         roomListContainer.innerHTML = `
             <table>
                 <thead>
@@ -17,14 +60,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     </tr>
                 </thead>
                 <tbody>
-                    ${rooms.map(room => `
+                    ${rooms.map((room) => `
                         <tr>
-                            <td>${escapeHTML(room.name)}</td>
-                            <td>${room.max_guests}</td>
+                            <td>${escapeHTML(room.roomName)}</td>
+                            <td>${room.capacity}</td>
                             <td>${room.price.toLocaleString()}원</td>
                             <td>
                                 <label class="switch">
-                                    <input type="checkbox" ${room.is_active !== false ? 'checked' : ''} data-id="${room.id}">
+                                    <input
+                                        type="checkbox"
+                                        data-id="${room.id}"
+                                        ${room.isActive ? 'checked' : ''}
+                                    >
                                     <span class="slider round"></span>
                                 </label>
                             </td>
@@ -34,18 +81,172 @@ document.addEventListener('DOMContentLoaded', () => {
                 </tbody>
             </table>
         `;
-        
-        // Add event listeners for toggles
-        roomListContainer.querySelectorAll('.switch input').forEach(toggle => {
-            toggle.addEventListener('change', async (e) => {
-                const roomId = e.target.dataset.id;
-                const isActive = e.target.checked;
-                // In real app: await updateRoomStatus(roomId, isActive);
-                console.log(`Room ${roomId} active status: ${isActive}`);
-                alert(`객실 ID ${roomId}의 활성화 상태가 변경되었습니다.`);
+    }
+
+    function renderReservationStatusOptions(selectedStatus) {
+        return Object.entries(RESERVATION_STATUS_LABELS)
+            .map(([status, label]) => `
+                <option value="${status}" ${selectedStatus === status ? 'selected' : ''}>
+                    ${label}
+                </option>
+            `)
+            .join('');
+    }
+
+    function renderReservations(reservations) {
+        if (reservations.length === 0) {
+            renderEmpty(reservationListContainer, '예약 내역이 없습니다.');
+            return;
+        }
+
+        reservationListContainer.innerHTML = `
+            <table>
+                <thead>
+                    <tr>
+                        <th>객실명</th>
+                        <th>인원</th>
+                        <th>가격</th>
+                        <th>예약 날짜</th>
+                        <th>예약자명</th>
+                        <th>연락처</th>
+                        <th>상태</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${reservations.map((reservation) => `
+                        <tr>
+                            <td>${escapeHTML(reservation.roomName)}</td>
+                            <td>${reservation.guestCount}</td>
+                            <td>${reservation.totalPrice.toLocaleString()}원</td>
+                            <td>${escapeHTML(reservation.dateText)}</td>
+                            <td>${escapeHTML(reservation.guestName)}</td>
+                            <td>${escapeHTML(reservation.guestPhone)}</td>
+                            <td>
+                                <select
+                                    data-id="${reservation.id}"
+                                    data-previous-status="${reservation.status}"
+                                >
+                                    ${renderReservationStatusOptions(reservation.status)}
+                                </select>
+                            </td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        `;
+    }
+
+    async function loadRooms() {
+        renderLoading(roomListContainer, '객실 목록을 불러오는 중...');
+
+        try {
+            const rooms = await getAdminRooms();
+            renderRooms(rooms.map(normalizeAdminRoom));
+        } catch (error) {
+            renderError(roomListContainer, error.message || '객실 목록을 불러오지 못했습니다.');
+        }
+    }
+
+    async function loadReservations() {
+        renderLoading(reservationListContainer, '예약 목록을 불러오는 중...');
+
+        try {
+            const reservationData = await getAllReservations();
+            const reservations = (reservationData.reservations || []).map(normalizeAdminReservation);
+            renderReservations(reservations);
+        } catch (error) {
+            renderError(reservationListContainer, error.message || '예약 목록을 불러오지 못했습니다.');
+        }
+    }
+
+    async function handleRoomActivationChange(input) {
+        const roomId = input.dataset.id;
+        const nextValue = input.checked;
+
+        input.disabled = true;
+
+        try {
+            await updateRoomActivation(roomId, nextValue);
+            await loadRooms();
+            alert(`객실 ID ${roomId}의 활성화 상태가 변경되었습니다.`);
+        } catch (error) {
+            input.checked = !nextValue;
+            alert(error.message || '객실 활성화 상태 변경에 실패했습니다.');
+        } finally {
+            input.disabled = false;
+        }
+    }
+
+    async function handleReservationStatusChange(select) {
+        const reservationId = select.dataset.id;
+        const nextStatus = select.value;
+        const previousStatus = select.dataset.previousStatus || '';
+
+        select.disabled = true;
+
+        try {
+            await updateReservationStatus(reservationId, nextStatus);
+            await loadReservations();
+            alert(`예약 ID ${reservationId}의 상태가 ${nextStatus}(으)로 변경되었습니다.`);
+        } catch (error) {
+            select.value = previousStatus;
+            alert(error.message || '예약 상태 변경에 실패했습니다.');
+        } finally {
+            select.disabled = false;
+        }
+    }
+
+    async function handleSectionChange(sectionName) {
+        setActiveSection(sectionName);
+
+        if (sectionName === SECTION.ROOMS) {
+            await loadRooms();
+            return;
+        }
+
+        if (sectionName === SECTION.RESERVATIONS) {
+            await loadReservations();
+        }
+    }
+
+    function bindNavigationEvents() {
+        navButtons.forEach((button) => {
+            button.addEventListener('click', async () => {
+                await handleSectionChange(button.dataset.section);
             });
         });
     }
 
-    loadRooms();
+    function bindDelegatedEvents() {
+        roomListContainer.addEventListener('change', async (event) => {
+            const target = event.target;
+            if (!(target instanceof HTMLInputElement)) {
+                return;
+            }
+
+            if (!target.matches('.switch input[data-id]')) {
+                return;
+            }
+
+            await handleRoomActivationChange(target);
+        });
+
+        reservationListContainer.addEventListener('change', async (event) => {
+            const target = event.target;
+            if (!(target instanceof HTMLSelectElement)) {
+                return;
+            }
+
+            if (!target.matches('select[data-id]')) {
+                return;
+            }
+
+            await handleReservationStatusChange(target);
+        });
+    }
+
+    bindNavigationEvents();
+    bindDelegatedEvents();
+    setActiveSection(SECTION.ROOMS);
+    await loadRooms();
 });

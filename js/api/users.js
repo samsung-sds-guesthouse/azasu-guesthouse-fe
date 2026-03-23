@@ -106,6 +106,31 @@ async function findIdByPhone(phone, verificationCode) {
   };
 }
 
+async function resetPasswordByFindPw({
+  login_id,
+  new_password,
+  phone,
+  verification_code,
+}) {
+  const response = await fetchApi("/api/v1/auth/find-pw", {
+    method: "POST",
+    body: JSON.stringify({
+      login_id,
+      new_password,
+      phone,
+      verification_code,
+    }),
+  });
+
+  const msg = extractApiMessage(response, "FAIL");
+
+  if (msg !== "SUCCESS") {
+    throw new Error("비밀번호 변경에 실패했습니다.");
+  }
+
+  return { msg };
+}
+
 async function getMyInfo() {
   const response = await fetchApi("/api/v1/auth/my-info", {
     method: "GET",

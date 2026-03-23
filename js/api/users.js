@@ -82,6 +82,30 @@ async function verifySmsCode(phone, code) {
   });
 }
 
+async function findIdByPhone(phone, verificationCode) {
+  const response = await fetchApi(
+    `/api/v1/auth/find-id${encodeQuery({
+      phone,
+      verification_code: verificationCode,
+    })}`,
+    {
+      method: "GET",
+    },
+  );
+
+  const data = unwrapResponse(response);
+  const msg = extractApiMessage(response, "FAIL");
+
+  if (msg !== "SUCCESS" || !data.login_id) {
+    throw new Error("아이디를 찾지 못했습니다.");
+  }
+
+  return {
+    msg,
+    login_id: data.login_id,
+  };
+}
+
 async function getMyInfo() {
   const response = await fetchApi("/api/v1/auth/my-info", {
     method: "GET",

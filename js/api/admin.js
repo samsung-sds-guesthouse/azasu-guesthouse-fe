@@ -1,2 +1,73 @@
-// This file will contain admin-specific API functions
-// (e.g., updateRoomStatus, createRoom, updateRoom, getAllReservations)
+async function getAdminRooms() {
+    const response = await fetchApi('/api/v1/admin/rooms');
+    return response.data?.rooms || [];
+}
+
+async function createRoom(roomFormData) {
+    return fetchApi('/api/v1/admin/rooms', {
+        method: 'POST',
+        body: roomFormData,
+    });
+}
+
+async function updateRoom(roomId, roomFormData) {
+    return fetchApi(`/api/v1/admin/rooms/${roomId}/modify`, {
+        method: 'POST',
+        body: roomFormData,
+    });
+}
+
+async function updateRoomActivation(roomId, isActive) {
+    return fetchApi(`/api/v1/admin/rooms/${roomId}/activation`, {
+        method: 'POST',
+        body: JSON.stringify({
+            is_active: isActive,
+        }),
+    });
+}
+
+async function getAllReservations(page = 1) {
+    const response = await fetchApi(`/api/v1/admin/reservations?page=${page}`);
+    return response.data || {};
+}
+
+async function updateReservationStatus(reservationId, status) {
+    return fetchApi(`/api/v1/admin/reservations/${reservationId}/modify`, {
+        method: 'POST',
+        body: JSON.stringify({ status }),
+    });
+}
+
+function formatAdminReservationDate(checkIn, checkOut) {
+    const start = checkIn ? new Date(checkIn).toLocaleDateString('ko-KR') : '';
+    const end = checkOut ? new Date(checkOut).toLocaleDateString('ko-KR') : '';
+
+    if (start && end) {
+        return `${start} ~ ${end}`;
+    }
+
+    return start || end || '-';
+}
+
+function normalizeAdminReservation(reservation) {
+    return {
+        id: reservation.id,
+        roomName: reservation.room_name || '',
+        guestCount: reservation.guest_count ?? 0,
+        totalPrice: Number(reservation.total_price || 0),
+        dateText: formatAdminReservationDate(reservation.check_in, reservation.check_out),
+        guestName: reservation.guest_name || '',
+        guestPhone: reservation.guest_phone || reservation.gusth_phone || '-',
+        status: reservation.status || 'PENDING',
+    };
+}
+
+function normalizeAdminRoom(room) {
+    return {
+        id: room.id,
+        roomName: room.room_name || '',
+        capacity: room.capacity ?? 0,
+        price: Number(room.price || 0),
+        isActive: room.is_active !== false,
+    };
+}

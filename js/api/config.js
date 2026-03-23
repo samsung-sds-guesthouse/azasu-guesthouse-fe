@@ -36,45 +36,36 @@ function extractApiMessage(data, fallbackMessage) {
  * @returns {Promise<any>} - The JSON response from the API.
  */
 async function fetchApi(endpoint, options = {}) {
-  const url = `${API_BASE_URL}${endpoint}`;
-  const headers = {
-    "Content-Type": "application/json",
-    ...options.headers,
-  };
+    const url = `${API_BASE_URL}${endpoint}`;
+    const isFormData = options.body instanceof FormData;
+    const headers = {
+        ...options.headers,
+    };
 
-  // Add authorization token if available
-  const token = sessionStorage.getItem("token");
-  if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
-  }
-
-  try {
-    const response = await fetch(url, {
-      credentials: "include",
-      ...options,
-      headers,
-    });
-
-    const rawBody = await response.text();
-    let data = null;
-
-    if (rawBody) {
-      try {
-        data = JSON.parse(rawBody);
-      } catch {
-        data = rawBody;
-      }
+    if (!isFormData && !headers['Content-Type']) {
+        headers['Content-Type'] = 'application/json';
     }
 
-    if (!response.ok) {
-      throw new Error(
-        extractApiMessage(data, `HTTP error! status: ${response.status}`),
-      );
+    const token = sessionStorage.getItem('token');
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
     }
 
-    return data;
-  } catch (error) {
-    console.error("API Error:", error);
-    throw error;
-  }
+    try {
+        const response = await fetch(url, {
+            ...options,
+            credentials: 'include',
+            headers,
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({ message: 'An unknown error occurred' }));
+            throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('API Error:', error);
+        throw error;
+    }
 }

@@ -24,21 +24,31 @@ async function signupUser({ login_id, password, name, phone }) {
 }
 
 async function checkUsernameAvailability(loginId) {
-  const response = await fetchApi(
-    `/api/v1/auth/duplicate-id${encodeQuery({ login_id: loginId })}`,
-    {
-      method: "GET",
-    },
-  );
+  try {
+    const response = await fetchApi(
+      `/api/v1/auth/duplicate-id${encodeQuery({ login_id: loginId })}`,
+      {
+        method: "GET",
+      },
+    );
 
-  return {
-    available: true,
-    msg:
+    const msg =
       (response && response.msg) ||
       (response && response.data && response.data.msg) ||
       response ||
-      "SUCCESS",
-  };
+      "SUCCESS";
+
+    return {
+      available: msg === "SUCCESS",
+      msg,
+    };
+  } catch (error) {
+    if (error.message === "FAIL") {
+      throw new Error("중복된 아이디입니다.");
+    }
+
+    throw error;
+  }
 }
 
 async function sendSmsVerification(phone) {

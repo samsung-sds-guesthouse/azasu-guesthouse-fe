@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>숙소 상세 - Azasu Guesthouse</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.html">홈</a>
+            <a href="login.html">로그인</a>
+            <a href="signup.html">회원가입</a>
+        </nav>
+    </header>
+    <main>
+        <section class="accommodation-details-section">
+            <h1>숙소 이름</h1>
+            <img src="https://via.placeholder.com/600x400" alt="숙소 사진">
+            <p>가격: ₩100,000</p>
+            <p>평점: 4.5/5.0</p>
+            <p>상세 설명: Lorem ipsum dolor sit amet, consectetur adipiscing elit. ...</p>
+            <h2>편의시설</h2>
+            <ul>
+                <li>Wi-Fi</li>
+                <li>주방</li>
+                <li>세탁기</li>
+            </ul>
+            <h2>위치</h2>
+            <div id="map" style="width:100%;height:400px;"></div>
+            <a href="reservation.html"><button>예약하기</button></a>
+        </section>
+    </main>
+    <footer>
+        <ul>
+            <li><a href="#">서비스 소개</a></li>
+            <li><a href="#">이용약관</a></li>
+            <li><a href="#">개인정보처리방침</a></li>
+        </ul>
+    </footer>
+    <script src="js/main.js"></script>
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=YOUR_APP_KEY"></script>
+    <script>
+        var container = document.getElementById('map');
+        var options = {
+            center: new kakao.maps.LatLng(33.450701, 126.570667),
+            level: 3
+        };
+
+        var map = new kakao.maps.Map(container, options);
+    </script>
+</body>
+</html>

@@ -27,9 +27,23 @@ document.addEventListener('DOMContentLoaded', () => {
                     <a href="#" id="logout-btn">로그아웃</a>
                 `;
             }
-            document.getElementById('logout-btn').addEventListener('click', () => {
-                sessionStorage.removeItem('user');
-                window.location.href = '/';
+            document.getElementById('logout-btn').addEventListener('click', async (event) => {
+                event.preventDefault();
+
+                try {
+                    const response = await logout();
+                    const message = response.msg || 'SUCCESS';
+
+                    if (message !== 'SUCCESS') {
+                        throw new Error(message);
+                    }
+
+                    sessionStorage.removeItem('user');
+                    sessionStorage.removeItem('token');
+                    window.location.href = '/';
+                } catch (error) {
+                    alert(error.message || '로그아웃에 실패했습니다.');
+                }
             });
         } else {
             navLinks.innerHTML = `

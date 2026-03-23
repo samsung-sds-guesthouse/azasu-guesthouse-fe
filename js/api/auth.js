@@ -23,3 +23,21 @@ async function login(loginId, password) {
     role: (data && data.role) || (response && response.role) || "GUEST",
   };
 }
+
+async function logout() {
+  const response = await fetchApi("/api/v1/auth/logout", {
+    method: "POST",
+  });
+
+  const data =
+    response && typeof response === "object" && response.data
+      ? response.data
+      : response;
+
+  return {
+    msg:
+      (data && data.msg) ||
+      (response && response.msg) ||
+      (typeof response === "string" ? response : "SUCCESS"),
+  };
+}

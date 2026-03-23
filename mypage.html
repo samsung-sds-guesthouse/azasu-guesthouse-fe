@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>마이페이지 - Azasu Guesthouse</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header id="header">
+        <!-- Header content will be dynamically loaded by auth.js -->
+    </header>
+
+    <main>
+        <h1>마이페이지</h1>
+
+        <section id="user-info">
+            <h2>회원 정보</h2>
+            <p><strong>아이디:</strong> <span id="user-id"></span></p>
+            <p><strong>이름:</strong> <span id="user-name"></span></p>
+            <p><strong>전화번호:</strong> <span id="user-phone"></span></p>
+            
+            <h3>비밀번호 변경</h3>
+            <form id="change-password-form">
+                <input type="password" id="current-password" placeholder="현재 비밀번호" required>
+                <input type="password" id="new-password" placeholder="새 비밀번호" required minlength="12" maxlength="20">
+                <input type="password" id="new-password-confirm" placeholder="새 비밀번호 확인" required>
+                <button type="submit">변경하기</button>
+            </form>
+
+            <button id="delete-account-btn">회원 탈퇴</button>
+        </section>
+
+        <section id="my-reservations">
+            <h2>내 예약 내역</h2>
+            <div id="reservation-list">
+                <!-- Reservation list will be populated here -->
+            </div>
+            <div id="pagination">
+                <!-- Pagination controls will be added here -->
+            </div>
+        </section>
+    </main>
+
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/api/config.js"></script>
+    <script src="js/api/users.js"></script>
+    <script src="js/api/reservations.js"></script>
+    <script src="js/pages/mypage.js"></script>
+</body>
+</html>

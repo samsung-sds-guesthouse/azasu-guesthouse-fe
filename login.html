@@ -7,28 +7,27 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <header>
-        <nav>
-            <a href="index.html">홈</a>
-        </nav>
+    <header id="header">
+        <!-- Header content will be dynamically loaded by auth.js -->
     </header>
+
     <main>
-        <section class="login-section">
-            <h1>로그인</h1>
-            <form>
-                <input type="text" name="username" placeholder="아이디" required>
-                <input type="password" name="password" placeholder="비밀번호" required>
-                <button type="submit">로그인</button>
-            </form>
-        </section>
+        <h1>로그인</h1>
+        <form id="login-form">
+            <input type="text" id="username" placeholder="아이디 (8~15자)" required minlength="8" maxlength="15">
+            <input type="password" id="password" placeholder="비밀번호 (12~20자)" required minlength="12" maxlength="20">
+            <button type="submit">로그인</button>
+        </form>
+        <div class="login-links">
+            <a href="find-id.html">아이디 찾기</a>
+            <a href="find-pw.html">비밀번호 찾기</a>
+        </div>
     </main>
-    <footer>
-        <ul>
-            <li><a href="#">서비스 소개</a></li>
-            <li><a href="#">이용약관</a></li>
-            <li><a href="#">개인정보처리방침</a></li>
-        </ul>
-    </footer>
-    <script src="js/main.js"></script>
+
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/api/config.js"></script>
+    <script src="js/api/auth.js"></script>
+    <script src="js/pages/login.js"></script>
 </body>
 </html>

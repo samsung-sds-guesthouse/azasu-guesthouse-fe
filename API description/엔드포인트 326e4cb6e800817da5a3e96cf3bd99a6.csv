@@ -1,0 +1,23 @@
+﻿기능,Method,URL,기타,담당자,사용자,설명,카테고리
+회원가입,POST,/api/v1/auth/signup,시작 전,,유저,,인증/인가
+로그인,POST,/api/v1/auth/login,시작 전,,유저,,인증/인가
+로그아웃,POST,/api/v1/auth/logout,시작 전,,유저,,인증/인가
+내 예약목록 조회,GET,/api/v1/reservations/me,시작 전,,유저,,게스트
+예약 하기,POST,/api/v1/reservations,시작 전,,유저,,게스트
+예약 목록 조회,GET,/api/v1/admin/reservations,시작 전,,관리자,,관리자
+객실 등록,POST,/api/v1/admin/rooms,시작 전,,관리자,,관리자
+객실 조회,GET,/api/v1/admin/rooms,시작 전,,관리자,,관리자
+객실 수정,POST,/api/v1/admin/rooms/{id}/modify,시작 전,,관리자,,관리자
+객실 활성화/비활성화,POST,/api/v1/admin/rooms/{id}/activation,시작 전,,관리자,,관리자
+예약 상태 변경,POST,/api/v1/admin/reservations/{id}/modify,시작 전,,관리자,,관리자
+예약 취소,POST,/api/v1/reservations/{id}/delete,시작 전,,유저,,게스트
+객실 상세 정보,GET,/api/v1/rooms/{id},시작 전,,유저,,게스트
+예약가능한 목록 조회,GET,/api/v1/rooms,시작 전,,유저,"  • 쿼리파라미터 필터링 필요
+  • 페이지네이션 필요",게스트
+아이디 찾기,GET,/api/v1/auth/find-id,시작 전,,유저,,인증/인가
+비밀번호 초기화 및 변경,POST,/api/v1/auth/find-pw,시작 전,,유저,,인증/인가
+SMS 인증,POST,/api/v1/auth/sms,시작 전,,유저,,인증/인가
+ID 중복 체크,GET,/api/v1/auth/duplicate-id,시작 전,,유저,,인증/인가
+마이페이지,GET,/api/v1/auth/my-info,시작 전,,유저,,인증/인가
+비밀번호 변경,POST,/api/v1/auth/change-pw,시작 전,,유저,,인증/인가
+회원 탈퇴,POST,/api/v1/auth/withdraw,시작 전,,유저,,인증/인가

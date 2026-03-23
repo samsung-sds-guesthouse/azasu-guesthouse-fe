@@ -1,38 +1,45 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>아이디 찾기 - Azasu Guesthouse</title>
-    <link rel="stylesheet" href="css/style.css">
-</head>
-<body>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
     <header id="header">
-        <!-- Header content will be dynamically loaded by auth.js -->
+      <!-- Header content will be dynamically loaded by auth.js -->
     </header>
 
     <main>
-        <h1>아이디 찾기</h1>
-        <form id="find-id-form">
-            <div class="form-group">
-                <input type="tel" id="phone" placeholder="전화번호 (010-XXXX-XXXX)" required pattern="^010-\\d{4}-\\d{4}$">
-                <button type="button" id="send-sms-btn">인증번호 발송</button>
-            </div>
-            <div class="form-group" id="sms-verify-group" style="display: none;">
-                <input type="text" id="sms-code" placeholder="인증번호 입력">
-                <button type="button" id="verify-sms-btn">인증 확인</button>
-            </div>
-        </form>
-        <div id="found-id-result" style="display: none;">
-            <p>회원님의 아이디는 <strong id="found-id"></strong> 입니다.</p>
-            <a href="login.html">로그인하기</a>
+      <h1>아이디 찾기</h1>
+      <form id="find-id-form">
+        <div class="form-group">
+          <input
+            type="tel"
+            id="phone"
+            placeholder="전화번호 (예시 : 01012345678)"
+            required
+            pattern="^010\\d{8}$"
+          />
+          <button type="button" id="send-sms-btn">인증번호 발송</button>
         </div>
+        <div class="form-group" id="sms-verify-group" style="display: none">
+          <input type="text" id="sms-code" placeholder="인증번호 입력" />
+          <button type="button" id="verify-sms-btn">인증 확인</button>
+        </div>
+      </form>
+      <div id="found-id-result" style="display: none">
+        <p>회원님의 아이디는 <strong id="found-id"></strong> 입니다.</p>
+        <a href="login.html">로그인하기</a>
+      </div>
     </main>
 
     <script src="js/utils.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/api/config.js"></script>
+    <script src="js/api/auth.js"></script>
     <script src="js/api/users.js"></script>
     <script src="js/pages/find-id.js"></script>
-</body>
+  </body>
 </html>

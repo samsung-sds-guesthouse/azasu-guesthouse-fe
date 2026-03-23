@@ -63,9 +63,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
 
-      // TODO: Implement calendar with unavailable dates shaded
-      // TODO: Add logic to enable reservation button
-      // TODO: Implement reservation process (check login, show confirmation)
+        document.getElementById('reserve-btn').addEventListener('click', () => {
+            checkUser(); // from auth.js - redirects if not logged in
+            const confirmation = confirm('보증금을 입금해야 최종적으로 예약이 완료됩니다. 정말 예약하시겠습니까? 보증금은 환불이 되지 않습니다.');
+            if(confirmation) {
+                // Dummy reservation
+                alert('예약이 완료되었습니다 (상태: PENDING). 내 예약 페이지로 이동합니다.');
+                window.location.href = 'reservation.html';
+            }
+        });
+        
+        // Dummy logic to enable button
+        document.getElementById('checkin-date').addEventListener('change', () => {
+             document.getElementById('reserve-btn').disabled = false;
+        });
 
       document.getElementById('reserve-btn').addEventListener('click', () => {
         checkUser(); // from auth.js - redirects if not logged in

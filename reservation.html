@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>객실 상세 - Azasu Guesthouse</title>
+    <title>내 예약 - Azasu Guesthouse</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -11,15 +11,23 @@
         <!-- Header content will be dynamically loaded by auth.js -->
     </header>
 
-    <main id="room-detail-container">
-        <!-- Room detail content will be populated by main.js -->
+    <main>
+        <h1>내 예약</h1>
+        <section id="my-reservations">
+            <div id="reservation-list">
+                <!-- Reservation list will be populated here -->
+            </div>
+            <div id="pagination">
+                <!-- Pagination controls will be added here -->
+            </div>
+        </section>
     </main>
 
     <script src="js/utils.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/api/config.js"></script>
     <script src="js/api/auth.js"></script>
-    <script src="js/api/rooms.js"></script>
-    <script src="js/pages/room-detail.js"></script>
+    <script src="js/api/reservations.js"></script>
+    <script src="js/pages/reservation.js"></script>
 </body>
 </html>

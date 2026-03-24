@@ -1,0 +1,64 @@
+/* ── Forms ───────────────────────────────────────────────── */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  max-width: 500px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="tel"],
+input[type="date"],
+input[type="number"],
+input[type="file"],
+textarea,
+select {
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 0.88rem;
+  font-family: 'Noto Sans KR', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  outline: none;
+  transition: border-color var(--transition);
+}
+
+input:focus, select:focus, textarea:focus { border-color: var(--gold); }
+
+textarea { resize: vertical; }
+
+/* ── Flatpickr overrides ─────────────────────────────────── */
+.flatpickr-calendar {
+  font-family: 'Noto Sans KR', sans-serif !important;
+  border-radius: 0 !important;
+  box-shadow: var(--shadow-md) !important;
+}
+
+.flatpickr-day.selected,
+.flatpickr-day.startRange,
+.flatpickr-day.endRange {
+  background: var(--text) !important;
+  border-color: var(--text) !important;
+}
+
+.flatpickr-day.inRange {
+  background: rgba(28, 20, 12, 0.08) !important;
+  border-color: transparent !important;
+  box-shadow: -5px 0 0 rgba(28, 20, 12, 0.08), 5px 0 0 rgba(28, 20, 12, 0.08) !important;
+}

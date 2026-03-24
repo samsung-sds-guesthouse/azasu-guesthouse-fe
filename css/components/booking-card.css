@@ -1,0 +1,134 @@
+/* ── Booking Card (room-detail sidebar) ──────────────────── */
+.booking-card {
+  position: sticky;
+  top: 100px;
+  background: var(--white);
+  border: 1px solid var(--border-light);
+  padding: 2.5rem 2rem;
+  box-shadow: var(--shadow-md);
+}
+
+.booking-card-title {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 0.5rem;
+}
+
+.booking-price {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 2rem;
+  font-weight: 300;
+  margin-bottom: 0.2rem;
+}
+
+.booking-price-note {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-bottom: 2rem;
+}
+
+.booking-divider {
+  height: 1px;
+  background: var(--border-light);
+  margin: 1.5rem 0;
+}
+
+.booking-form label {
+  display: block;
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.booking-form input[type="text"] {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 0.85rem;
+  color: var(--text);
+  outline: none;
+  border-radius: var(--radius);
+  transition: border-color var(--transition);
+  margin-bottom: 1.2rem;
+}
+
+.booking-form input:focus { border-color: var(--gold); }
+
+/* Guest counter */
+.guest-counter {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  margin-bottom: 1.5rem;
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.guest-counter button {
+  width: 46px;
+  height: 46px;
+  background: transparent;
+  border: none;
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+  flex-shrink: 0;
+  padding: 0;
+}
+
+.guest-counter button:hover {
+  background: var(--bg-dark);
+  color: var(--white);
+}
+
+#guest-count {
+  flex: 1;
+  text-align: center;
+  font-size: 0.88rem;
+  color: var(--text);
+  padding: 0.8rem;
+}
+
+#reserve-btn {
+  width: 100%;
+  padding: 1rem;
+  background: var(--text);
+  color: var(--white);
+  border: none;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 0.82rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background var(--transition);
+  border-radius: var(--radius);
+}
+
+#reserve-btn:hover:not(:disabled) { background: var(--gold); }
+
+#reserve-btn:disabled {
+  background: var(--border);
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
+.booking-meta {
+  margin-top: 1.2rem;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.7;
+}
+
+@media (max-width: 1024px) {
+  .booking-card { position: static; }
+}

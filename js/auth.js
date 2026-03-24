@@ -1,71 +1,8 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const headerContainer = document.getElementById('header');
-
-  // Load header content
-  fetch('_header.html')
-    .then((response) => response.text())
-    .then((html) => {
-      headerContainer.innerHTML = html;
-      updateHeader();
-    });
-
-  function updateHeader() {
-    const navLinks = document.querySelector('.nav-links');
-    // Mock user object - replace with actual session management
-    const user = JSON.parse(sessionStorage.getItem('user'));
-
-    if (user) {
-      if (user.role === 'ADMIN') {
-        navLinks.innerHTML = `
-                    <a href="admin-dashboard.html">관리자 페이지</a>
-                    <a href="#" id="logout-btn">로그아웃</a>
-                `;
-      } else {
-        navLinks.innerHTML = `
-                    <span>${user.name}님</span>
-                    <a href="reservation.html">내 예약</a>
-                    <a href="mypage.html">마이페이지</a>
-                    <a href="#" id="logout-btn">로그아웃</a>
-                `;
-            }
-            document.getElementById('logout-btn').addEventListener('click', async (event) => {
-                event.preventDefault();
-                const logoutButton = event.currentTarget;
-
-                if (logoutButton.dataset.pending === 'true') {
-                    return;
-                }
-
-                try {
-                    logoutButton.dataset.pending = 'true';
-                    logoutButton.style.pointerEvents = 'none';
-                    logoutButton.style.opacity = '0.6';
-                    const response = await logout();
-                    const message = response.msg || 'SUCCESS';
-
-            if (message !== 'SUCCESS') {
-              throw new Error(message);
-            }
-
-                    sessionStorage.removeItem('user');
-                    sessionStorage.removeItem('token');
-                    window.location.href = '/';
-                } catch (error) {
-                    alert('로그아웃에 실패했습니다. 다시 시도해주세요.');
-                } finally {
-                    logoutButton.dataset.pending = 'false';
-                    logoutButton.style.pointerEvents = '';
-                    logoutButton.style.opacity = '';
-                }
-            });
-        } else {
-            navLinks.innerHTML = `
-                <a href="login.html">로그인</a>
-                <a href="signup.html">회원가입</a>
-            `;
-    }
-  }
-});
+/**
+ * auth.js — Route Guards
+ * 페이지 접근 권한 검사만 담당합니다.
+ * 헤더 렌더링은 js/components/header.js 를 참조하세요.
+ */
 
 function checkAdmin() {
   const user = JSON.parse(sessionStorage.getItem('user'));

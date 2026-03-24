@@ -3,39 +3,112 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Azasu Guesthouse</title>
+    <title>Azasu Guesthouse — 전통과 현대가 만나는 료칸</title>
     <link rel="stylesheet" href="css/style.css" />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
-    />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
   </head>
   <body>
+
     <header id="header">
-      <!-- Header content will be dynamically loaded by auth.js -->
+      <!-- js/components/header.js 에서 동적으로 로드 -->
     </header>
 
-    <main>
-      <h1>객실 목록</h1>
+    <!-- ── Hero ── -->
+    <section class="hero" id="hero">
+      <div class="hero-bg" id="heroBg"></div>
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <span class="hero-eyebrow">Azasu Guesthouse · 아자수 게스트하우스</span>
+        <h1 class="hero-title">
+          자연 속에 깃든<br>일본 전통의 아름다움
+        </h1>
+        <div class="hero-divider">
+          <span>✦</span>
+        </div>
+        <p class="hero-subtitle">
+          백년의 고요함 속에서 완벽한 휴식을 경험하세요
+        </p>
+      </div>
+      <div class="hero-scroll" onclick="document.getElementById('rooms-section').scrollIntoView({behavior:'smooth'})">
+        scroll
+      </div>
+    </section>
+
+    <!-- ── Search Bar ── -->
+    <section class="search-section" id="searchSection">
       <div class="search-container">
-        <input type="text" id="date-range" placeholder="날짜 선택" />
-        <select id="guest-count">
-          <!-- Options will be populated by main.js -->
-        </select>
+        <span class="search-label">객실 검색</span>
+        <input type="text" id="date-range" placeholder="체크인 → 체크아웃 날짜 선택" />
+        <select id="guest-count"></select>
         <button id="search-btn">검색</button>
       </div>
-      <div id="room-list" class="room-list">
-        <!-- Room list will be populated by main.js -->
+    </section>
+
+    <!-- ── Rooms ── -->
+    <section class="rooms-section" id="rooms-section">
+      <div class="section-header">
+        <span class="section-eyebrow">객실 안내 · Accommodations</span>
+        <h2 class="section-title">편안함과 전통이 어우러진 공간</h2>
+        <p class="section-desc">
+          각 객실은 계절의 변화를 담아 설계되었으며,
+          일본 전통 미학을 현대적으로 재해석한 인테리어로 꾸며져 있습니다.
+        </p>
       </div>
-    </main>
+
+      <div id="room-list" class="room-list">
+        <!-- js/pages/main.js 에서 렌더링 -->
+      </div>
+    </section>
+
+    <!-- ── Footer ── -->
+    <footer>
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <p class="logo-footer">AZASU GUESTHOUSE</p>
+          <p>전통 료칸의 진정한 아름다움과<br>현대적 편안함이 공존하는 곳</p>
+        </div>
+        <div class="footer-col">
+          <h4>이용 안내</h4>
+          <ul>
+            <li><a href="#">체크인 15:00 / 체크아웃 11:00</a></li>
+            <li><a href="#">조식 07:00 – 09:30</a></li>
+            <li><a href="#">온천 이용 06:00 – 23:00</a></li>
+            <li><a href="#">주차 무료 제공</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>고객 센터</h4>
+          <ul>
+            <li><a href="#">예약 문의: 0120-XXX-XXX</a></li>
+            <li><a href="#">이메일: info@azasu.jp</a></li>
+            <li><a href="#">오시는 길</a></li>
+            <li><a href="#">자주 묻는 질문</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2025 Azasu Guesthouse. All rights reserved.</span>
+        <span>개인정보 처리방침 · 이용약관</span>
+      </div>
+    </footer>
 
     <script src="js/utils.js"></script>
-    <script src="js/auth.js"></script>
     <script src="js/api/config.js"></script>
     <script src="js/api/auth.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/components/header.js"></script>
     <script src="js/api/rooms.js"></script>
-    <script src="js/pages/main.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="js/pages/main.js"></script>
+    <script>
+      // 히어로 패럴랙스 + 헤더 스크롤 처리
+      const heroBg = document.getElementById('heroBg');
+      const headerEl = document.getElementById('header');
+      window.addEventListener('load', () => { if (heroBg) heroBg.classList.add('loaded'); });
+      window.addEventListener('scroll', () => {
+        headerEl.classList.toggle('scrolled', window.scrollY > 60);
+        if (heroBg) heroBg.style.transform = `scale(1) translateY(${window.scrollY * 0.25}px)`;
+      });
+    </script>
   </body>
-</body>
 </html>

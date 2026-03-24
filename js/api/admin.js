@@ -3,6 +3,11 @@ async function getAdminRooms() {
     return response.data?.rooms || [];
 }
 
+async function getAdminRoom(roomId) {
+    const response = await fetchApi(`/api/v1/admin/rooms/${roomId}`);
+    return response.data?.room || null;
+}
+
 async function createRoom(roomFormData) {
     return fetchApi('/api/v1/admin/rooms', {
         method: 'POST',
@@ -64,7 +69,7 @@ function normalizeAdminReservation(reservation) {
 
 function normalizeAdminRoom(room) {
     return {
-        id: room.id ?? room.roomId,
+        id: room.id ?? room.roomId ?? room.room_id,
         roomName: room.roomName || room.room_name || '',
         capacity: room.capacity ?? 0,
         price: Number(room.price || 0),

@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    const ROOM_EDIT_DRAFT_KEY = 'adminRoomEditDraft';
     const roomListContainer = document.getElementById('admin-room-list');
     const reservationListContainer = document.getElementById('admin-reservation-list');
     const roomsSection = document.getElementById('admin-rooms-section');
@@ -178,15 +177,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function handleRoomEditNavigation(link) {
-        const roomId = Number(link.dataset.editRoomId);
-        const room = currentRooms.find((item) => item.id === roomId);
-
-        if (!room) {
-            window.location.href = link.href;
-            return;
-        }
-
-        sessionStorage.setItem(ROOM_EDIT_DRAFT_KEY, JSON.stringify(room));
         window.location.href = link.href;
     }
 

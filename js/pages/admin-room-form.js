@@ -1,7 +1,6 @@
 function initAdminRoomForm(options = {}) {
     checkAdmin();
 
-    const ROOM_EDIT_DRAFT_KEY = 'adminRoomEditDraft';
     const mode = options.mode === 'edit' ? 'edit' : 'add';
     const formSelector = options.formSelector || 'form';
     const redirectUrl = options.redirectUrl || 'admin-dashboard.html';
@@ -23,27 +22,26 @@ function initAdminRoomForm(options = {}) {
     const imagePreviewImg = document.getElementById('room-image-preview-img');
     const imagePlaceholder = document.getElementById('room-image-placeholder');
     const imageStatus = document.getElementById('room-image-status');
+    const urlParams = new URLSearchParams(window.location.search);
+    const roomId = mode === 'edit' ? urlParams.get('id') : null;
     let objectUrl = '';
 
     if (roomImageInput) {
         roomImageInput.required = mode === 'add';
     }
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const roomId = mode === 'edit' ? urlParams.get('id') : null;
-
     if (mode === 'edit' && !roomId) {
-        document.querySelector('main').innerHTML = '<p>잘못된 접근입니다.</p>';
+        document.querySelector('main').innerHTML = '<p>Invalid room id.</p>';
         return;
     }
 
     function normalizeRoomDetail(room) {
         return {
-            id: room.id ?? room.roomId ?? '',
+            id: room.id ?? room.roomId ?? room.room_id ?? '',
             roomName: room.roomName || room.room_name || room.name || '',
             picture: room.picture || room.image || '',
-            capacity: room.capacity || room.max_guests || '',
-            price: room.price || '',
+            capacity: room.capacity ?? room.max_guests ?? '',
+            price: room.price ?? '',
             description: room.description || '',
             policy: room.policy || room.rules || '',
         };
@@ -145,7 +143,7 @@ function initAdminRoomForm(options = {}) {
     function populateForm(room) {
         const roomDetail = normalizeRoomDetail(room);
         const hasPicture = Boolean(roomDetail.picture);
-        const pictureLabel = hasPicture ? '등록된 이미지' : '-';
+        const pictureLabel = hasPicture ? 'registered image' : '-';
         const previewSource = buildPreviewSource(roomDetail.picture);
 
         roomNameInput.value = roomDetail.roomName;
@@ -161,26 +159,12 @@ function initAdminRoomForm(options = {}) {
         if (previewSource) {
             updateImagePreview({
                 src: previewSource,
-                statusText: `현재 등록된 이미지: ${pictureLabel}`,
+                statusText: `Current image: ${pictureLabel}`,
             });
             return;
         }
 
-        setEmptyPreview('등록된 이미지가 없습니다.');
-    }
-
-    function getStoredRoomDraft() {
-        const rawDraft = sessionStorage.getItem(ROOM_EDIT_DRAFT_KEY);
-        if (!rawDraft) {
-            return null;
-        }
-
-        try {
-            return JSON.parse(rawDraft);
-        } catch (error) {
-            sessionStorage.removeItem(ROOM_EDIT_DRAFT_KEY);
-            return null;
-        }
+        setEmptyPreview('No registered image.');
     }
 
     function handleImageChange() {
@@ -188,15 +172,15 @@ function initAdminRoomForm(options = {}) {
 
         if (!imageFile) {
             const fallbackMessage = mode === 'edit'
-                ? '현재 등록된 이미지를 그대로 사용합니다.'
-                : '아직 선택된 이미지가 없습니다.';
+                ? 'Using the current registered image.'
+                : 'No image selected yet.';
 
             if (mode === 'edit' && currentImageElement && currentImageElement.textContent !== '-') {
                 const currentImageSrc = imagePreviewImg?.dataset.originalSrc;
                 if (currentImageSrc) {
                     updateImagePreview({
                         src: currentImageSrc,
-                        statusText: `현재 등록된 이미지: ${currentImageElement.textContent}`,
+                        statusText: `Current image: ${currentImageElement.textContent}`,
                     });
                     return;
                 }
@@ -210,7 +194,7 @@ function initAdminRoomForm(options = {}) {
         objectUrl = URL.createObjectURL(imageFile);
         updateImagePreview({
             src: objectUrl,
-            statusText: `선택된 이미지: ${imageFile.name}`,
+            statusText: `Selected image: ${imageFile.name}`,
             fromObjectUrl: true,
         });
     }
@@ -232,17 +216,20 @@ function initAdminRoomForm(options = {}) {
         return formData;
     }
 
-    function loadRoomDetail() {
-        const storedRoom = getStoredRoomDraft();
+    async function loadRoomDetail() {
+        try {
+            const room = await getAdminRoom(roomId);
 
-        if (!storedRoom || String(storedRoom.id ?? storedRoom.roomId ?? '') !== String(roomId)) {
-            document.querySelector('main').innerHTML = '<p>객실 정보를 불러오지 못했습니다. 대시보드에서 다시 진입해 주세요.</p>';
-            return;
-        }
+            if (!room) {
+                throw new Error('Room detail is empty');
+            }
 
-        populateForm(storedRoom);
-        if (imagePreviewImg && imagePreviewImg.src) {
-            imagePreviewImg.dataset.originalSrc = imagePreviewImg.src;
+            populateForm(room);
+            if (imagePreviewImg && imagePreviewImg.src) {
+                imagePreviewImg.dataset.originalSrc = imagePreviewImg.src;
+            }
+        } catch (error) {
+            document.querySelector('main').innerHTML = '<p>Failed to load room details. Please return to the dashboard and try again.</p>';
         }
     }
 
@@ -255,18 +242,17 @@ function initAdminRoomForm(options = {}) {
 
             if (mode === 'edit') {
                 await updateRoom(roomId, formData);
-                sessionStorage.removeItem(ROOM_EDIT_DRAFT_KEY);
-                alert('객실이 성공적으로 수정되었습니다.');
+                alert('Room updated successfully.');
             } else {
                 await createRoom(formData);
-                alert('객실이 성공적으로 추가되었습니다.');
+                alert('Room created successfully.');
             }
 
             window.location.href = redirectUrl;
         } catch (error) {
             const fallbackMessage = mode === 'edit'
-                ? '객실 수정에 실패했습니다.'
-                : '객실 추가에 실패했습니다.';
+                ? 'Failed to update the room.'
+                : 'Failed to create the room.';
             alert(error.message || fallbackMessage);
         } finally {
             submitButton.disabled = false;
@@ -281,5 +267,5 @@ function initAdminRoomForm(options = {}) {
         return;
     }
 
-    setEmptyPreview('아직 선택된 이미지가 없습니다.');
+    setEmptyPreview('No image selected yet.');
 }

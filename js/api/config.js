@@ -35,7 +35,7 @@ async function fetchApi(endpoint, options = {}) {
     ...options.headers,
   };
 
-  if (!isFormData && !headers["Content-Type"]) {
+  if (options.body != null && !isFormData && !headers["Content-Type"]) {
     headers["Content-Type"] = "application/json";
   }
 

@@ -3,6 +3,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const usernameInput = document.getElementById("username");
   const passwordInput = document.getElementById("password");
   const passwordConfirmInput = document.getElementById("password-confirm");
+  const passwordConfirmMessage = document.getElementById(
+    "password-confirm-message",
+  );
   const nameInput = document.getElementById("name");
   const phoneInput = document.getElementById("phone");
   const smsCodeInput = document.getElementById("sms-code");
@@ -34,6 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const SMS_EXPIRE_MS = 5 * 60 * 1000;
   const MAX_SMS_SEND_COUNT = 3;
   const MAX_SMS_RESEND_COUNT = 2;
+  const ENABLE_TEMP_SIGNUP_BYPASS = true;
 
   function getTrimmedValue(input) {
     return input.value.trim();
@@ -142,6 +146,29 @@ document.addEventListener("DOMContentLoaded", () => {
     );
   }
 
+  function updatePasswordConfirmFeedback() {
+    const password = passwordInput.value;
+    const passwordConfirm = passwordConfirmInput.value;
+
+    if (!passwordConfirm) {
+      passwordConfirmMessage.hidden = true;
+      passwordConfirmMessage.textContent = "";
+      passwordConfirmInput.removeAttribute("aria-invalid");
+      return;
+    }
+
+    if (password === passwordConfirm) {
+      passwordConfirmMessage.hidden = true;
+      passwordConfirmMessage.textContent = "";
+      passwordConfirmInput.removeAttribute("aria-invalid");
+      return;
+    }
+
+    passwordConfirmMessage.hidden = false;
+    passwordConfirmMessage.textContent = "비밀번호가 일치하지 않습니다.";
+    passwordConfirmInput.setAttribute("aria-invalid", "true");
+  }
+
   checkUsernameBtn.addEventListener("click", async () => {
     const loginId = getTrimmedValue(usernameInput);
 
@@ -204,6 +231,18 @@ document.addEventListener("DOMContentLoaded", () => {
       validateForm();
       alert("인증번호가 발송되었습니다. 5분 이내에 인증을 완료해주세요.");
     } catch (error) {
+      if (ENABLE_TEMP_SIGNUP_BYPASS) {
+        smsRequestedPhone = phone;
+        isSmsVerified = true;
+        verifiedPhone = phone;
+        smsExpiresAt = Date.now() + SMS_EXPIRE_MS;
+        smsVerifyGroup.style.display = "none";
+        stopSmsTimer();
+        validateForm();
+        alert("SMS API가 준비되지 않아 임시로 인증 완료 처리했습니다.");
+        return;
+      }
+
       alert("인증번호 발송을 완료했습니다. 문자를 확인해주세요.");
     } finally {
       sendSmsBtn.disabled = false;
@@ -347,9 +386,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
   [passwordInput, passwordConfirmInput, nameInput, smsCodeInput].forEach(
     (input) => {
-      input.addEventListener("input", validateForm);
+      input.addEventListener("input", () => {
+        if (input === passwordInput || input === passwordConfirmInput) {
+          updatePasswordConfirmFeedback();
+        }
+        validateForm();
+      });
     },
   );
 
+  updatePasswordConfirmFeedback();
   validateForm();
 });

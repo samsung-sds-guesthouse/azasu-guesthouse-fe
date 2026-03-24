@@ -47,6 +47,12 @@
               minlength="12"
               maxlength="20"
             />
+            <p
+              id="password-confirm-message"
+              class="field-message"
+              aria-live="polite"
+              hidden
+            ></p>
           </div>
           <div class="form-group">
             <input
@@ -64,7 +70,7 @@
               id="phone"
               placeholder="전화번호 (예시 : 01012345678)"
               required
-              pattern="^010\\d{8}$"
+              pattern="010\d{8}"
             />
             <button type="button" id="send-sms-btn">인증번호 발송</button>
           </div>

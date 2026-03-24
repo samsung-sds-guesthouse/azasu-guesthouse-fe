@@ -11,52 +11,56 @@
       <!-- Header content will be dynamically loaded by auth.js -->
     </header>
 
-    <main>
-      <h1>비밀번호 찾기</h1>
-      <form id="find-pw-form">
-        <div class="form-group">
-          <input type="text" id="username" placeholder="아이디" required />
-        </div>
-        <div class="form-group">
-          <input
-            type="tel"
-            id="phone"
-            placeholder="전화번호 (예시 : 01012345678)"
-            required
-            pattern="^010\\d{8}$"
-          />
-          <button type="button" id="send-sms-btn">인증번호 발송</button>
-        </div>
-        <div class="form-group" id="sms-verify-group" style="display: none">
-          <input type="text" id="sms-code" placeholder="인증번호 입력" />
-          <button type="button" id="verify-sms-btn">인증 확인</button>
-        </div>
-      </form>
+    <main class="auth-page">
+      <section class="auth-card">
+        <p class="auth-logo">AZASU GUESTHOUSE</p>
+        <p class="auth-subtitle">본인 확인 후 새 비밀번호를 설정할 수 있습니다</p>
 
-      <form id="reset-pw-form" style="display: none">
-        <h3>새 비밀번호 입력</h3>
-        <div class="form-group">
-          <input
-            type="password"
-            id="new-password"
-            placeholder="새 비밀번호 (12~20자)"
-            required
-            minlength="12"
-            maxlength="20"
-          />
-        </div>
-        <div class="form-group">
-          <input
-            type="password"
-            id="new-password-confirm"
-            placeholder="새 비밀번호 확인"
-            required
-            minlength="12"
-            maxlength="20"
-          />
-        </div>
-        <button type="submit">비밀번호 변경</button>
-      </form>
+        <form id="find-pw-form">
+          <div class="form-group">
+            <input type="text" id="username" placeholder="아이디" required />
+          </div>
+          <div class="form-group">
+            <input
+              type="tel"
+              id="phone"
+              placeholder="전화번호 (예시 : 01012345678)"
+              required
+              pattern="^010\\d{8}$"
+            />
+            <button type="button" id="send-sms-btn">인증번호 발송</button>
+          </div>
+          <div class="form-group" id="sms-verify-group" style="display: none">
+            <input type="text" id="sms-code" placeholder="인증번호 입력" />
+            <button type="button" id="verify-sms-btn">인증 확인</button>
+          </div>
+        </form>
+
+        <form id="reset-pw-form" style="display: none">
+          <h3 class="auth-section-title">새 비밀번호 입력</h3>
+          <div class="form-group">
+            <input
+              type="password"
+              id="new-password"
+              placeholder="새 비밀번호 (12~20자)"
+              required
+              minlength="12"
+              maxlength="20"
+            />
+          </div>
+          <div class="form-group">
+            <input
+              type="password"
+              id="new-password-confirm"
+              placeholder="새 비밀번호 확인"
+              required
+              minlength="12"
+              maxlength="20"
+            />
+          </div>
+          <button type="submit">비밀번호 변경</button>
+        </form>
+      </section>
     </main>
 
     <script src="js/utils.js"></script>

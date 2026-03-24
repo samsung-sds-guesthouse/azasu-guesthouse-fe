@@ -6,6 +6,12 @@
 document.addEventListener('DOMContentLoaded', () => {
   const headerContainer = document.getElementById('header');
   if (!headerContainer) return;
+  const currentPage = window.location.pathname.split('/').filter(Boolean).pop() || 'index.html';
+  const useScrolledHeader = currentPage !== 'index.html';
+
+  if (useScrolledHeader) {
+    headerContainer.classList.add('scrolled');
+  }
 
   fetch('_header.html')
     .then(res => res.text())
@@ -31,13 +37,11 @@ document.addEventListener('DOMContentLoaded', () => {
         <a href="reservation.html">내 예약</a>
         <a href="mypage.html">마이페이지</a>
         <a href="#" id="logout-btn">로그아웃</a>
-        <a href="index.html" class="nav-btn-reserve">예약하기</a>
       `;
     } else {
       navLinks.innerHTML = `
         <a href="login.html">로그인</a>
         <a href="signup.html">회원가입</a>
-        <a href="index.html" class="nav-btn-reserve">예약하기</a>
       `;
     }
 

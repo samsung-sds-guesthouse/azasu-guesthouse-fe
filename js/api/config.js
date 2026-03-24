@@ -28,13 +28,6 @@ function extractApiMessage(data, fallbackMessage) {
   return fallbackMessage;
 }
 
-/**
- * A wrapper for the fetch API to handle common tasks like setting headers
- * and handling errors.
- * @param {string} endpoint - The API endpoint to call.
- * @param {object} [options={}] - The options for the fetch call.
- * @returns {Promise<any>} - The JSON response from the API.
- */
 async function fetchApi(endpoint, options = {}) {
   const url = `${API_BASE_URL}${endpoint}`;
   const isFormData = options.body instanceof FormData;
@@ -62,9 +55,14 @@ async function fetchApi(endpoint, options = {}) {
       const errorData = await response
         .json()
         .catch(() => ({ message: "An unknown error occurred" }));
-      throw new Error(
-        errorData.message || `HTTP error! status: ${response.status}`,
+      const errorMessage = extractApiMessage(
+        errorData,
+        `HTTP error! status: ${response.status}`,
       );
+      const apiError = new Error(errorMessage);
+      apiError.status = response.status;
+      apiError.data = errorData;
+      throw apiError;
     }
 
     return await response.json();

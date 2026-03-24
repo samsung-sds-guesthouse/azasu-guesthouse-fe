@@ -1,0 +1,111 @@
+/* ── Auth Pages: login, signup, find-id, find-pw ─────────── */
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6rem 2rem 4rem;
+  background: var(--bg);
+}
+
+.auth-card {
+  background: var(--white);
+  padding: 3rem 3.5rem;
+  width: 100%;
+  max-width: 460px;
+  box-shadow: var(--shadow-md);
+}
+
+.auth-logo {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 1rem;
+  letter-spacing: 0.15em;
+  color: var(--text);
+  text-align: center;
+  margin-bottom: 0.4rem;
+}
+
+.auth-subtitle {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-align: center;
+  margin-bottom: 2.5rem;
+  letter-spacing: 0.05em;
+}
+
+.auth-card form { max-width: 100%; }
+
+.auth-card form + form,
+.auth-card form + .auth-result,
+.auth-card .auth-result + form {
+  margin-top: 1.5rem;
+}
+
+.auth-card input[type="text"],
+.auth-card input[type="password"],
+.auth-card input[type="email"],
+.auth-card input[type="tel"] {
+  width: 100%;
+  background: var(--bg);
+}
+
+.auth-card .form-group {
+  gap: 0.75rem;
+}
+
+.auth-card button[type="submit"] {
+  width: 100%;
+  padding: 0.95rem;
+  font-size: 0.82rem;
+  letter-spacing: 0.12em;
+  margin-top: 0.5rem;
+}
+
+.auth-links {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.auth-links a,
+.login-links a {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  transition: color var(--transition);
+}
+
+.auth-links a:hover,
+.login-links a:hover { color: var(--gold); }
+
+.login-links {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+  width: 100%;
+}
+
+.auth-result {
+  text-align: center;
+  padding: 1.5rem;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.auth-result p {
+  font-size: 0.88rem;
+  margin-bottom: 1rem;
+}
+
+.auth-result .button {
+  display: inline-flex;
+}
+
+.auth-section-title {
+  font-size: 0.82rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 0.2rem;
+}

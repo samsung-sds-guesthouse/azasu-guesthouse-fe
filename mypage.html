@@ -1,42 +1,80 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
-<head>
+  <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>마이페이지 - Azasu Guesthouse</title>
     <link rel="stylesheet" href="css/style.css">
-</head>
-<body>
+  </head>
+  <body>
     <header id="header">
         <!-- Header content will be dynamically loaded by auth.js -->
     </header>
 
-    <main>
-        <h1>마이페이지</h1>
+    <main class="page-wrapper mypage-page">
+        <section class="mypage-hero">
+            <span class="page-eyebrow">My Page</span>
+            <h1 class="page-title">내 정보와 계정 설정</h1>
+            <p class="mypage-intro">
+                예약을 위한 기본 정보를 확인하고, 비밀번호 변경과 회원 탈퇴를 한 곳에서 관리할 수 있습니다.
+            </p>
+        </section>
 
-        <section id="user-info">
-            <h2>회원 정보</h2>
-            <p><strong>아이디:</strong> <span id="user-id"></span></p>
-            <p><strong>이름:</strong> <span id="user-name"></span></p>
-            <p><strong>전화번호:</strong> <span id="user-phone"></span></p>
-            
-            <h3>비밀번호 변경</h3>
-            <form id="change-password-form">
-                <input type="password" id="current-password" placeholder="현재 비밀번호" required>
-                <input type="password" id="new-password" placeholder="새 비밀번호" required minlength="12" maxlength="20">
-                <input type="password" id="new-password-confirm" placeholder="새 비밀번호 확인" required>
-                <button type="submit">변경하기</button>
-            </form>
+        <div class="page-divider"></div>
 
-            <button id="delete-account-btn">회원 탈퇴</button>
+        <section id="user-info" class="mypage-grid">
+            <article class="mypage-panel mypage-profile">
+                <p class="mypage-panel-label">Profile</p>
+                <h2>회원 정보</h2>
+                <div class="mypage-info-list">
+                    <div class="mypage-info-item">
+                        <span class="mypage-info-key">아이디</span>
+                        <strong id="user-id"></strong>
+                    </div>
+                    <div class="mypage-info-item">
+                        <span class="mypage-info-key">이름</span>
+                        <strong id="user-name"></strong>
+                    </div>
+                    <div class="mypage-info-item">
+                        <span class="mypage-info-key">전화번호</span>
+                        <strong id="user-phone"></strong>
+                    </div>
+                </div>
+            </article>
+
+            <div class="mypage-actions">
+                <article class="mypage-panel">
+                    <p class="mypage-panel-label">Security</p>
+                    <h3>비밀번호 변경</h3>
+                    <form id="change-password-form">
+                        <input type="password" id="current-password" placeholder="현재 비밀번호" required>
+                        <input type="password" id="new-password" placeholder="새 비밀번호" required minlength="12" maxlength="20">
+                        <input type="password" id="new-password-confirm" placeholder="새 비밀번호 확인" required>
+                        <button type="submit">변경하기</button>
+                    </form>
+                </article>
+
+                <article class="mypage-panel mypage-danger">
+                    <p class="mypage-panel-label">Account</p>
+                    <h3>회원 탈퇴</h3>
+                    <p class="mypage-danger-text">
+                        탈퇴 시 계정 정보와 관련 데이터가 삭제될 수 있습니다. 진행 전 다시 한 번 확인해주세요.
+                    </p>
+                    <form id="withdraw-form">
+                        <input type="password" id="withdraw-password" placeholder="비밀번호 확인" required>
+                        <button type="submit" id="delete-account-btn" class="danger-btn">회원 탈퇴</button>
+                    </form>
+                </article>
+            </div>
         </section>
     </main>
 
     <script src="js/utils.js"></script>
-    <script src="js/auth.js"></script>
     <script src="js/api/config.js"></script>
     <script src="js/api/auth.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/components/header.js"></script>
     <script src="js/api/users.js"></script>
     <script src="js/pages/mypage.js"></script>
-</body>
+  </body>
 </html>

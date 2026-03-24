@@ -25,6 +25,7 @@ async function login(loginId, password) {
 
     return {
       msg,
+      login_id: (data && data.login_id) || (response && response.login_id) || loginId,
       name: (data && data.name) || (response && response.name) || "",
       role: (data && data.role) || (response && response.role) || "GUEST",
     };
@@ -35,6 +36,7 @@ async function login(loginId, password) {
     ) {
       return {
         msg: "SUCCESS",
+        login_id: TEMP_ADMIN_LOGIN_ID,
         name: "테스트 관리자",
         role: "ADMIN",
       };
@@ -46,6 +48,7 @@ async function login(loginId, password) {
     ) {
       return {
         msg: "SUCCESS",
+        login_id: TEMP_GUEST_LOGIN_ID,
         name: "테스트 게스트",
         role: "GUEST",
       };

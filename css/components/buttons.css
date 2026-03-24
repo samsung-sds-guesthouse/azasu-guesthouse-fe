@@ -1,0 +1,38 @@
+/* ── Buttons ──────────────────────────────────────────────── */
+button, .button {
+  padding: 0.8rem 1.5rem;
+  background-color: var(--text);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 0.85rem;
+  text-align: center;
+  transition: background var(--transition);
+}
+
+button:hover, .button:hover { background-color: var(--gold); }
+
+button:disabled {
+  background-color: var(--border);
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
+/* Cancel / outline variant */
+.cancel-btn {
+  white-space: nowrap;
+  padding: 0.6rem 1.2rem;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+}
+
+.cancel-btn:hover {
+  border-color: #b91c1c;
+  color: #b91c1c;
+  background: transparent;
+}

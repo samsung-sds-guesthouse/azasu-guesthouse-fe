@@ -1,0 +1,223 @@
+/* ── Reservation & Mypage ────────────────────────────────── */
+.page-wrapper {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 6rem 2rem 5rem;
+}
+
+.page-eyebrow {
+  display: block;
+  font-size: 0.7rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 0.8rem;
+}
+
+.page-title {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 1.8rem;
+  font-weight: 200;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.5rem;
+}
+
+.page-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 2rem 0 3rem;
+}
+
+/* Reservation list */
+#reservation-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  margin-top: 1.5rem;
+}
+
+.reservation-item {
+  display: grid;
+  grid-template-columns: 200px 1fr auto;
+  gap: 1.5rem;
+  align-items: center;
+  padding: 1.5rem;
+  border: 1px solid var(--border-light);
+  background: var(--white);
+  transition: box-shadow var(--transition);
+}
+
+.reservation-item:hover { box-shadow: var(--shadow-sm); }
+
+.reservation-image-link { display: block; }
+
+.reservation-item img {
+  width: 100%;
+  height: 130px;
+  object-fit: cover;
+}
+
+.reservation-item h4 {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 1rem;
+  font-weight: 300;
+  margin-bottom: 0.5rem;
+}
+
+.reservation-item p {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin: 0.25rem 0;
+}
+
+.reservation-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-self: stretch;
+  align-items: center;
+}
+
+/* Status badges */
+.status-pending   { color: #c08a00; font-weight: 500; font-size: 0.8rem; }
+.status-confirmed { color: #2a7a45; font-weight: 500; font-size: 0.8rem; }
+.status-cancelled { color: #b91c1c; font-weight: 500; font-size: 0.8rem; }
+
+/* Pagination */
+#pagination {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.page-btn {
+  padding: 0.5rem 0.9rem;
+  background: var(--white);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.page-btn:hover,
+.page-btn.is-active {
+  background: var(--text);
+  border-color: var(--text);
+  color: var(--white);
+}
+
+@media (max-width: 768px) {
+  .reservation-item { grid-template-columns: 1fr; }
+  .reservation-actions { justify-content: flex-start; }
+}
+
+/* Mypage */
+.mypage-page {
+  padding-top: 7rem;
+}
+
+.mypage-hero {
+  max-width: 680px;
+}
+
+.mypage-intro {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.9;
+}
+
+.mypage-grid {
+  display: grid;
+  grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.mypage-actions {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.mypage-panel {
+  background: var(--white);
+  border: 1px solid var(--border-light);
+  padding: 2rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.mypage-panel-label {
+  font-size: 0.7rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 0.8rem;
+}
+
+.mypage-panel h2,
+.mypage-panel h3 {
+  font-size: 1.25rem;
+  font-weight: 300;
+  margin-bottom: 1.25rem;
+}
+
+.mypage-info-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.mypage-info-item {
+  padding: 1rem 0;
+  border-top: 1px solid var(--border-light);
+}
+
+.mypage-info-item:first-child {
+  padding-top: 0;
+  border-top: none;
+}
+
+.mypage-info-key {
+  display: block;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.45rem;
+}
+
+.mypage-info-item strong {
+  display: block;
+  font-size: 1rem;
+  color: var(--text);
+  word-break: break-all;
+}
+
+.mypage-panel form {
+  max-width: 100%;
+}
+
+.mypage-danger {
+  border-color: rgba(185, 28, 28, 0.16);
+  background: #fffaf9;
+}
+
+.mypage-danger-text {
+  font-size: 0.83rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+.danger-btn {
+  background: #7f1d1d;
+}
+
+.danger-btn:hover {
+  background: #991b1b;
+}
+
+@media (max-width: 900px) {
+  .mypage-grid {
+    grid-template-columns: 1fr;
+  }
+}

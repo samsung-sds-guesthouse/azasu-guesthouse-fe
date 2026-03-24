@@ -2,47 +2,188 @@ document.addEventListener('DOMContentLoaded', async () => {
     checkUser();
 
     const reservationList = document.getElementById('reservation-list');
-    const reservations = await getMyReservations();
+    const paginationContainer = document.getElementById('pagination');
+    const EMPTY_MESSAGE = '예약 내역이 없습니다.';
 
-    if (reservations.length === 0) {
-        reservationList.innerHTML = '<p>예약 내역이 없습니다.</p>';
-        return;
+    function formatDateTime(value) {
+        if (!value) {
+            return '-';
+        }
+
+        const date = new Date(value);
+
+        if (Number.isNaN(date.getTime())) {
+            return escapeHTML(value);
+        }
+
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+
+        return `${year}.${month}.${day}`;
     }
 
-    reservations.forEach(res => {
-        const item = document.createElement('div');
-        item.className = 'reservation-item';
-        item.innerHTML = `
-            <img src="${escapeHTML(res.image)}" alt="${escapeHTML(res.room_name)}">
-            <div>
-                <h4><a href="room-detail.html?id=${res.room_id}">${escapeHTML(res.room_name)}</a></h4>
-                <p>인원: ${res.guests}명</p>
-                <p>가격: ${res.price.toLocaleString()}원</p>
-                <p>날짜: ${escapeHTML(res.date)}</p>
-                <p>상태: <span class="status-${res.status.toLowerCase()}">${res.status}</span></p>
-            </div>
-            ${res.status === 'PENDING' || res.status === 'CONFIRMED' ? `<button class="cancel-btn" data-id="${res.id}">예약 취소</button>` : ''}
-        `;
-        reservationList.appendChild(item);
-    });
+    function formatStayPeriod(checkIn, checkOut) {
+        if (!checkIn && !checkOut) {
+            return '-';
+        }
 
-    reservationList.querySelectorAll('.cancel-btn').forEach(button => {
-        button.addEventListener('click', async (e) => {
-            const reservationId = e.target.dataset.id;
-            const confirmation = confirm('정말 예약을 취소하시겠습니까?');
+        return `${formatDateTime(checkIn)} ~ ${formatDateTime(checkOut)}`;
+    }
 
-            if (!confirmation) {
+    function getStatusLabel(status) {
+        if (status === 'CONFIRMED') {
+            return '승인';
+        }
+
+        if (status === 'CANCELLED') {
+            return '취소';
+        }
+
+        return '대기';
+    }
+
+    function isCancelableStatus(status) {
+        return status === 'PENDING' || status === 'CONFIRMED';
+    }
+
+    function renderEmptyState() {
+        reservationList.innerHTML = `<p>${EMPTY_MESSAGE}</p>`;
+        paginationContainer.innerHTML = '';
+    }
+
+    function renderPagination(currentPage, maxPage) {
+        if (maxPage <= 1) {
+            paginationContainer.innerHTML = '';
+            return;
+        }
+
+        const buttons = [];
+
+        buttons.push(`
+            <button
+                type="button"
+                class="page-btn"
+                data-page="${currentPage - 1}"
+                ${currentPage <= 1 ? 'disabled' : ''}
+            >
+                이전
+            </button>
+        `);
+
+        for (let page = 1; page <= maxPage; page += 1) {
+            buttons.push(`
+                <button
+                    type="button"
+                    class="page-btn ${page === currentPage ? 'is-active' : ''}"
+                    data-page="${page}"
+                >
+                    ${page}
+                </button>
+            `);
+        }
+
+        buttons.push(`
+            <button
+                type="button"
+                class="page-btn"
+                data-page="${currentPage + 1}"
+                ${currentPage >= maxPage ? 'disabled' : ''}
+            >
+                다음
+            </button>
+        `);
+
+        paginationContainer.innerHTML = buttons.join('');
+        paginationContainer.querySelectorAll('.page-btn').forEach((button) => {
+            button.addEventListener('click', () => {
+                const nextPage = Number(button.dataset.page);
+
+                if (!nextPage || nextPage === currentPage || nextPage < 1 || nextPage > maxPage) {
+                    return;
+                }
+
+                loadReservations(nextPage);
+            });
+        });
+    }
+
+    function renderReservations(reservations) {
+        reservationList.innerHTML = '';
+
+        reservations.forEach((reservation) => {
+            const item = document.createElement('article');
+            item.className = 'reservation-item';
+            item.innerHTML = `
+                <a href="room-detail.html?id=${reservation.room_id}" class="reservation-image-link">
+                    <img src="${reservation.picture}" alt="${escapeHTML(reservation.room_name)}">
+                </a>
+                <div>
+                    <h4><a href="room-detail.html?id=${reservation.room_id}">${escapeHTML(reservation.room_name)}</a></h4>
+                    <p>인원: ${reservation.guest_count}명</p>
+                    <p>가격: ${reservation.total_price.toLocaleString()}원</p>
+                    <p>날짜: ${formatStayPeriod(reservation.check_in, reservation.check_out)}</p>
+                    <p>예약일: ${formatDateTime(reservation.reservation_date)}</p>
+                    <p>상태: <span class="reservation-status status-${reservation.status.toLowerCase()}">${getStatusLabel(reservation.status)}</span></p>
+                </div>
+                ${isCancelableStatus(reservation.status) ? `
+                    <div class="reservation-actions">
+                        <button type="button" class="cancel-btn" data-id="${reservation.id}">예약 취소</button>
+                    </div>
+                ` : '<div class="reservation-actions"></div>'}
+            `;
+            reservationList.appendChild(item);
+        });
+
+        reservationList.querySelectorAll('.cancel-btn').forEach((button) => {
+            button.addEventListener('click', async (event) => {
+                const cancelButton = event.currentTarget;
+                const reservationId = cancelButton.dataset.id;
+                const confirmation = confirm('정말 예약을 취소하시겠습니까?');
+
+                if (!confirmation) {
+                    return;
+                }
+
+                try {
+                    cancelButton.disabled = true;
+                    await cancelReservation(reservationId);
+
+                    const reservationItem = cancelButton.closest('.reservation-item');
+                    const statusElement = reservationItem.querySelector('.reservation-status');
+                    statusElement.textContent = '취소';
+                    statusElement.className = 'reservation-status status-cancelled';
+                    cancelButton.remove();
+                    alert('예약이 취소되었습니다.');
+                } catch (error) {
+                    alert('예약 취소에 실패했습니다.');
+                    cancelButton.disabled = false;
+                }
+            });
+        });
+    }
+
+    async function loadReservations(page) {
+        try {
+            const result = await getMyReservations(page);
+
+            if (!result.list.length) {
+                renderEmptyState();
                 return;
             }
 
-            await cancelReservation(reservationId);
-            alert('예약이 취소되었습니다.');
+            renderReservations(result.list);
+            renderPagination(result.current_page, result.max_page);
+        } catch (error) {
+            if (error.status === 401 || error.status === 403) {
+                alert('로그인이 필요합니다.');
+                window.location.href = 'login.html';
+                return;
+            }
 
-            const reservationItem = e.target.closest('.reservation-item');
-            const statusElement = reservationItem.querySelector('span');
-            statusElement.textContent = 'CANCELLED';
-            statusElement.className = 'status-cancelled';
-            e.target.remove();
-        });
-    });
+            renderEmptyState();
+        }
+    }
+
+    loadReservations(1);
 });

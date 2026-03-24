@@ -1,4 +1,4 @@
-const API_BASE_URL = "";
+const API_BASE_URL = "http://localhost:8080";
 
 function extractApiMessage(data, fallbackMessage) {
   if (typeof data === "string" && data.trim()) {
@@ -36,36 +36,40 @@ function extractApiMessage(data, fallbackMessage) {
  * @returns {Promise<any>} - The JSON response from the API.
  */
 async function fetchApi(endpoint, options = {}) {
-    const url = `${API_BASE_URL}${endpoint}`;
-    const isFormData = options.body instanceof FormData;
-    const headers = {
-        ...options.headers,
-    };
+  const url = `${API_BASE_URL}${endpoint}`;
+  const isFormData = options.body instanceof FormData;
+  const headers = {
+    ...options.headers,
+  };
 
-    if (!isFormData && !headers['Content-Type']) {
-        headers['Content-Type'] = 'application/json';
+  if (!isFormData && !headers["Content-Type"]) {
+    headers["Content-Type"] = "application/json";
+  }
+
+  const token = sessionStorage.getItem("token");
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
+  try {
+    const response = await fetch(url, {
+      ...options,
+      credentials: "include",
+      headers,
+    });
+
+    if (!response.ok) {
+      const errorData = await response
+        .json()
+        .catch(() => ({ message: "An unknown error occurred" }));
+      throw new Error(
+        errorData.message || `HTTP error! status: ${response.status}`,
+      );
     }
 
-    const token = sessionStorage.getItem('token');
-    if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-    }
-
-    try {
-        const response = await fetch(url, {
-            ...options,
-            credentials: 'include',
-            headers,
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => ({ message: 'An unknown error occurred' }));
-            throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
-        }
-
-        return await response.json();
-    } catch (error) {
-        console.error('API Error:', error);
-        throw error;
-    }
+    return await response.json();
+  } catch (error) {
+    console.error("API Error:", error);
+    throw error;
+  }
 }

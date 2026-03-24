@@ -1,11 +1,13 @@
 document.addEventListener('DOMContentLoaded', async () => {
     checkAdmin();
 
+    const ROOM_EDIT_DRAFT_KEY = 'adminRoomEditDraft';
     const roomListContainer = document.getElementById('admin-room-list');
     const reservationListContainer = document.getElementById('admin-reservation-list');
     const roomsSection = document.getElementById('admin-rooms-section');
     const reservationsSection = document.getElementById('admin-reservations-section');
     const navButtons = document.querySelectorAll('.admin-nav-btn');
+    let currentRooms = [];
 
     const SECTION = {
         ROOMS: 'rooms',
@@ -75,7 +77,15 @@ document.addEventListener('DOMContentLoaded', async () => {
                                     <span class="slider round"></span>
                                 </label>
                             </td>
-                            <td><a href="admin-room-edit.html?id=${room.id}" class="button">수정</a></td>
+                            <td>
+                                <a
+                                    href="admin-room-edit.html?id=${room.id}"
+                                    class="button"
+                                    data-edit-room-id="${room.id}"
+                                >
+                                    수정
+                                </a>
+                            </td>
                         </tr>
                     `).join('')}
                 </tbody>
@@ -141,7 +151,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         try {
             const rooms = await getAdminRooms();
-            renderRooms(rooms.map(normalizeAdminRoom));
+            currentRooms = rooms.map(normalizeAdminRoom);
+            renderRooms(currentRooms);
         } catch (error) {
             renderError(roomListContainer, error.message || '객실 목록을 불러오지 못했습니다.');
         }
@@ -159,18 +170,37 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
+    function handleRoomEditNavigation(link) {
+        const roomId = Number(link.dataset.editRoomId);
+        const room = currentRooms.find((item) => item.id === roomId);
+
+        if (!room) {
+            window.location.href = link.href;
+            return;
+        }
+
+        sessionStorage.setItem(ROOM_EDIT_DRAFT_KEY, JSON.stringify(room));
+        window.location.href = link.href;
+    }
+
     async function handleRoomActivationChange(input) {
         const roomId = input.dataset.id;
         const nextValue = input.checked;
+        const targetRoom = currentRooms.find((room) => String(room.id) === String(roomId));
+        const previousValue = targetRoom ? targetRoom.isActive : !nextValue;
 
         input.disabled = true;
 
         try {
             await updateRoomActivation(roomId, nextValue);
-            await loadRooms();
-            alert(`객실 ID ${roomId}의 활성화 상태가 변경되었습니다.`);
+            if (targetRoom) {
+                targetRoom.isActive = nextValue;
+            }
         } catch (error) {
             input.checked = !nextValue;
+            if (targetRoom) {
+                targetRoom.isActive = previousValue;
+            }
             alert(error.message || '객실 활성화 상태 변경에 실패했습니다.');
         } finally {
             input.disabled = false;
@@ -229,6 +259,21 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
 
             await handleRoomActivationChange(target);
+        });
+
+        roomListContainer.addEventListener('click', (event) => {
+            const target = event.target;
+            if (!(target instanceof HTMLElement)) {
+                return;
+            }
+
+            const link = target.closest('a[data-edit-room-id]');
+            if (!(link instanceof HTMLAnchorElement)) {
+                return;
+            }
+
+            event.preventDefault();
+            handleRoomEditNavigation(link);
         });
 
         reservationListContainer.addEventListener('change', async (event) => {

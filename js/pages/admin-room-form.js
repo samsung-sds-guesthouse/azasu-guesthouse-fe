@@ -1,6 +1,7 @@
 function initAdminRoomForm(options = {}) {
     checkAdmin();
 
+    const ROOM_EDIT_DRAFT_KEY = 'adminRoomEditDraft';
     const mode = options.mode === 'edit' ? 'edit' : 'add';
     const formSelector = options.formSelector || 'form';
     const redirectUrl = options.redirectUrl || 'admin-dashboard.html';
@@ -38,38 +39,14 @@ function initAdminRoomForm(options = {}) {
 
     function normalizeRoomDetail(room) {
         return {
-            roomName: room.room_name || room.name || '',
+            id: room.id ?? room.roomId ?? '',
+            roomName: room.roomName || room.room_name || room.name || '',
             picture: room.picture || room.image || '',
             capacity: room.capacity || room.max_guests || '',
             price: room.price || '',
             description: room.description || '',
             policy: room.policy || room.rules || '',
         };
-    }
-
-    function populateForm(room) {
-        const roomDetail = normalizeRoomDetail(room);
-        const pictureName = roomDetail.picture ? roomDetail.picture.split('/').pop() : '-';
-
-        roomNameInput.value = roomDetail.roomName;
-        roomGuestsInput.value = roomDetail.capacity;
-        roomPriceInput.value = roomDetail.price;
-        roomDescriptionInput.value = roomDetail.description;
-        roomRulesInput.value = roomDetail.policy;
-
-        if (currentImageElement) {
-            currentImageElement.textContent = pictureName;
-        }
-
-        if (roomDetail.picture) {
-            updateImagePreview({
-                src: roomDetail.picture,
-                statusText: `현재 등록된 이미지: ${pictureName}`,
-            });
-            return;
-        }
-
-        setEmptyPreview('등록된 이미지가 없습니다.');
     }
 
     function revokeObjectUrl() {
@@ -124,6 +101,88 @@ function initAdminRoomForm(options = {}) {
         }
     }
 
+    function detectImageMimeType(base64Value) {
+        if (!base64Value) {
+            return 'image/jpeg';
+        }
+
+        if (base64Value.startsWith('/9j/')) {
+            return 'image/jpeg';
+        }
+
+        if (base64Value.startsWith('iVBORw0KGgo')) {
+            return 'image/png';
+        }
+
+        if (base64Value.startsWith('R0lGOD')) {
+            return 'image/gif';
+        }
+
+        if (base64Value.startsWith('UklGR')) {
+            return 'image/webp';
+        }
+
+        return 'image/jpeg';
+    }
+
+    function buildPreviewSource(pictureValue) {
+        if (!pictureValue) {
+            return '';
+        }
+
+        if (
+            pictureValue.startsWith('data:image/')
+            || pictureValue.startsWith('blob:')
+            || pictureValue.startsWith('http')
+        ) {
+            return pictureValue;
+        }
+
+        const mimeType = detectImageMimeType(pictureValue);
+        return `data:${mimeType};base64,${pictureValue}`;
+    }
+
+    function populateForm(room) {
+        const roomDetail = normalizeRoomDetail(room);
+        const hasPicture = Boolean(roomDetail.picture);
+        const pictureLabel = hasPicture ? '등록된 이미지' : '-';
+        const previewSource = buildPreviewSource(roomDetail.picture);
+
+        roomNameInput.value = roomDetail.roomName;
+        roomGuestsInput.value = roomDetail.capacity;
+        roomPriceInput.value = roomDetail.price;
+        roomDescriptionInput.value = roomDetail.description;
+        roomRulesInput.value = roomDetail.policy;
+
+        if (currentImageElement) {
+            currentImageElement.textContent = pictureLabel;
+        }
+
+        if (previewSource) {
+            updateImagePreview({
+                src: previewSource,
+                statusText: `현재 등록된 이미지: ${pictureLabel}`,
+            });
+            return;
+        }
+
+        setEmptyPreview('등록된 이미지가 없습니다.');
+    }
+
+    function getStoredRoomDraft() {
+        const rawDraft = sessionStorage.getItem(ROOM_EDIT_DRAFT_KEY);
+        if (!rawDraft) {
+            return null;
+        }
+
+        try {
+            return JSON.parse(rawDraft);
+        } catch (error) {
+            sessionStorage.removeItem(ROOM_EDIT_DRAFT_KEY);
+            return null;
+        }
+    }
+
     function handleImageChange() {
         const imageFile = roomImageInput.files[0];
 
@@ -159,7 +218,7 @@ function initAdminRoomForm(options = {}) {
     function buildRoomFormData() {
         const formData = new FormData();
 
-        formData.append('room_name', roomNameInput.value.trim());
+        formData.append('roomName', roomNameInput.value.trim());
         formData.append('capacity', roomGuestsInput.value);
         formData.append('price', roomPriceInput.value);
         formData.append('description', roomDescriptionInput.value.trim());
@@ -173,15 +232,17 @@ function initAdminRoomForm(options = {}) {
         return formData;
     }
 
-    async function loadRoomDetail() {
-        try {
-            const room = await getRoomDetail(roomId);
-            populateForm(room);
-            if (imagePreviewImg && imagePreviewImg.src) {
-                imagePreviewImg.dataset.originalSrc = imagePreviewImg.src;
-            }
-        } catch (error) {
-            document.querySelector('main').innerHTML = `<p>${escapeHTML(error.message || '객실 정보를 불러오지 못했습니다.')}</p>`;
+    function loadRoomDetail() {
+        const storedRoom = getStoredRoomDraft();
+
+        if (!storedRoom || String(storedRoom.id ?? storedRoom.roomId ?? '') !== String(roomId)) {
+            document.querySelector('main').innerHTML = '<p>객실 정보를 불러오지 못했습니다. 대시보드에서 다시 진입해 주세요.</p>';
+            return;
+        }
+
+        populateForm(storedRoom);
+        if (imagePreviewImg && imagePreviewImg.src) {
+            imagePreviewImg.dataset.originalSrc = imagePreviewImg.src;
         }
     }
 
@@ -194,6 +255,7 @@ function initAdminRoomForm(options = {}) {
 
             if (mode === 'edit') {
                 await updateRoom(roomId, formData);
+                sessionStorage.removeItem(ROOM_EDIT_DRAFT_KEY);
                 alert('객실이 성공적으로 수정되었습니다.');
             } else {
                 await createRoom(formData);

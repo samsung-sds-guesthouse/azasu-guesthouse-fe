@@ -18,11 +18,8 @@ async function updateRoom(roomId, roomFormData) {
 }
 
 async function updateRoomActivation(roomId, isActive) {
-    return fetchApi(`/api/v1/admin/rooms/${roomId}/activation`, {
+    return fetchApi(`/api/v1/admin/rooms/${roomId}/activation?is_active=${encodeURIComponent(isActive)}`, {
         method: 'POST',
-        body: JSON.stringify({
-            is_active: isActive,
-        }),
     });
 }
 
@@ -52,22 +49,33 @@ function formatAdminReservationDate(checkIn, checkOut) {
 function normalizeAdminReservation(reservation) {
     return {
         id: reservation.id,
-        roomName: reservation.room_name || '',
-        guestCount: reservation.guest_count ?? 0,
-        totalPrice: Number(reservation.total_price || 0),
-        dateText: formatAdminReservationDate(reservation.check_in, reservation.check_out),
-        guestName: reservation.guest_name || '',
-        guestPhone: reservation.guest_phone || reservation.gusth_phone || '-',
+        roomName: reservation.roomName || reservation.room_name || '',
+        guestCount: reservation.guestCount ?? reservation.guest_count ?? 0,
+        totalPrice: Number(reservation.totalPrice || reservation.total_price || 0),
+        dateText: formatAdminReservationDate(
+            reservation.checkIn || reservation.check_in,
+            reservation.checkOut || reservation.check_out,
+        ),
+        guestName: reservation.guestName || reservation.guest_name || '',
+        guestPhone: reservation.guestPhone || reservation.guest_phone || reservation.gusth_phone || '-',
         status: reservation.status || 'PENDING',
     };
 }
 
 function normalizeAdminRoom(room) {
     return {
-        id: room.id,
-        roomName: room.room_name || '',
+        id: room.id ?? room.roomId,
+        roomName: room.roomName || room.room_name || '',
         capacity: room.capacity ?? 0,
         price: Number(room.price || 0),
-        isActive: room.is_active !== false,
+        picture: room.picture || room.image || '',
+        description: room.description || '',
+        policy: room.policy || room.rules || '',
+        status: room.status || '',
+        isActive: typeof room.isActive === 'boolean'
+            ? room.isActive
+            : typeof room.is_active === 'boolean'
+                ? room.is_active
+                : room.status === 'ACTIVE',
     };
 }

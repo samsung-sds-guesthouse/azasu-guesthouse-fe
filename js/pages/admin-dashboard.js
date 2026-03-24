@@ -1,11 +1,19 @@
 document.addEventListener('DOMContentLoaded', async () => {
     checkAdmin();
 
+    const navigationEntries = performance.getEntriesByType('navigation');
+    const navigationType = navigationEntries.length > 0 ? navigationEntries[0].type : '';
+    if (navigationType === 'back_forward') {
+        window.location.reload();
+        return;
+    }
+
     const roomListContainer = document.getElementById('admin-room-list');
     const reservationListContainer = document.getElementById('admin-reservation-list');
     const roomsSection = document.getElementById('admin-rooms-section');
     const reservationsSection = document.getElementById('admin-reservations-section');
     const navButtons = document.querySelectorAll('.admin-nav-btn');
+    let currentRooms = [];
 
     const SECTION = {
         ROOMS: 'rooms',
@@ -75,7 +83,15 @@ document.addEventListener('DOMContentLoaded', async () => {
                                     <span class="slider round"></span>
                                 </label>
                             </td>
-                            <td><a href="admin-room-edit.html?id=${room.id}" class="button">수정</a></td>
+                            <td>
+                                <a
+                                    href="admin-room-edit.html?id=${room.id}"
+                                    class="button"
+                                    data-edit-room-id="${room.id}"
+                                >
+                                    수정
+                                </a>
+                            </td>
                         </tr>
                     `).join('')}
                 </tbody>
@@ -141,7 +157,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         try {
             const rooms = await getAdminRooms();
-            renderRooms(rooms.map(normalizeAdminRoom));
+            currentRooms = rooms.map(normalizeAdminRoom);
+            renderRooms(currentRooms);
         } catch (error) {
             renderError(roomListContainer, error.message || '객실 목록을 불러오지 못했습니다.');
         }
@@ -159,18 +176,28 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
+    function handleRoomEditNavigation(link) {
+        window.location.href = link.href;
+    }
+
     async function handleRoomActivationChange(input) {
         const roomId = input.dataset.id;
         const nextValue = input.checked;
+        const targetRoom = currentRooms.find((room) => String(room.id) === String(roomId));
+        const previousValue = targetRoom ? targetRoom.isActive : !nextValue;
 
         input.disabled = true;
 
         try {
             await updateRoomActivation(roomId, nextValue);
-            await loadRooms();
-            alert(`객실 ID ${roomId}의 활성화 상태가 변경되었습니다.`);
+            if (targetRoom) {
+                targetRoom.isActive = nextValue;
+            }
         } catch (error) {
             input.checked = !nextValue;
+            if (targetRoom) {
+                targetRoom.isActive = previousValue;
+            }
             alert(error.message || '객실 활성화 상태 변경에 실패했습니다.');
         } finally {
             input.disabled = false;
@@ -217,6 +244,32 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
+    function bindPageVisibilityEvents() {
+        window.addEventListener('pageshow', async (event) => {
+            const pageNavigationEntries = performance.getEntriesByType('navigation');
+            const pageNavigationType = pageNavigationEntries.length > 0 ? pageNavigationEntries[0].type : '';
+
+            if (event.persisted || pageNavigationType === 'back_forward') {
+                window.location.reload();
+                return;
+            }
+
+            if (!roomsSection.hidden) {
+                await loadRooms();
+            }
+        });
+
+        document.addEventListener('visibilitychange', async () => {
+            if (document.visibilityState !== 'visible') {
+                return;
+            }
+
+            if (!roomsSection.hidden) {
+                await loadRooms();
+            }
+        });
+    }
+
     function bindDelegatedEvents() {
         roomListContainer.addEventListener('change', async (event) => {
             const target = event.target;
@@ -229,6 +282,21 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
 
             await handleRoomActivationChange(target);
+        });
+
+        roomListContainer.addEventListener('click', (event) => {
+            const target = event.target;
+            if (!(target instanceof HTMLElement)) {
+                return;
+            }
+
+            const link = target.closest('a[data-edit-room-id]');
+            if (!(link instanceof HTMLAnchorElement)) {
+                return;
+            }
+
+            event.preventDefault();
+            handleRoomEditNavigation(link);
         });
 
         reservationListContainer.addEventListener('change', async (event) => {
@@ -246,6 +314,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     bindNavigationEvents();
+    bindPageVisibilityEvents();
     bindDelegatedEvents();
     setActiveSection(SECTION.ROOMS);
     await loadRooms();

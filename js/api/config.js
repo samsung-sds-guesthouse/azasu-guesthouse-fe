@@ -1,4 +1,4 @@
-const API_BASE_URL = "";
+const API_BASE_URL = "http://localhost:8080";
 
 function extractApiMessage(data, fallbackMessage) {
   if (typeof data === "string" && data.trim()) {
@@ -28,51 +28,46 @@ function extractApiMessage(data, fallbackMessage) {
   return fallbackMessage;
 }
 
-/**
- * A wrapper for the fetch API to handle common tasks like setting headers
- * and handling errors.
- * @param {string} endpoint - The API endpoint to call.
- * @param {object} [options={}] - The options for the fetch call.
- * @returns {Promise<any>} - The JSON response from the API.
- */
 async function fetchApi(endpoint, options = {}) {
-    const url = `${API_BASE_URL}${endpoint}`;
-    const isFormData = options.body instanceof FormData;
-    const headers = {
-        ...options.headers,
-    };
+  const url = `${API_BASE_URL}${endpoint}`;
+  const isFormData = options.body instanceof FormData;
+  const headers = {
+    ...options.headers,
+  };
 
-    if (!isFormData && !headers['Content-Type']) {
-        headers['Content-Type'] = 'application/json';
+  if (options.body != null && !isFormData && !headers["Content-Type"]) {
+    headers["Content-Type"] = "application/json";
+  }
+
+  const token = sessionStorage.getItem("token");
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
+  try {
+    const response = await fetch(url, {
+      ...options,
+      credentials: "include",
+      headers,
+    });
+
+    if (!response.ok) {
+      const errorData = await response
+        .json()
+        .catch(() => ({ message: "An unknown error occurred" }));
+      const errorMessage = extractApiMessage(
+        errorData,
+        `HTTP error! status: ${response.status}`,
+      );
+      const apiError = new Error(errorMessage);
+      apiError.status = response.status;
+      apiError.data = errorData;
+      throw apiError;
     }
 
-    const token = sessionStorage.getItem('token');
-    if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-    }
-
-    try {
-        const response = await fetch(url, {
-            ...options,
-            credentials: 'include',
-            headers,
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => ({ message: 'An unknown error occurred' }));
-            const errorMessage = extractApiMessage(
-                errorData,
-                `HTTP error! status: ${response.status}`,
-            );
-            const apiError = new Error(errorMessage);
-            apiError.status = response.status;
-            apiError.data = errorData;
-            throw apiError;
-        }
-
-        return await response.json();
-    } catch (error) {
-        console.error('API Error:', error);
-        throw error;
-    }
+    return await response.json();
+  } catch (error) {
+    console.error("API Error:", error);
+    throw error;
+  }
 }

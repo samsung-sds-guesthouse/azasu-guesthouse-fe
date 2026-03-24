@@ -8,8 +8,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const LOGIN_ID_MAX_LENGTH = 15;
   const PASSWORD_MIN_LENGTH = 12;
   const PASSWORD_MAX_LENGTH = 20;
-  const INVALID_LOGIN_MESSAGE =
-    "아이디 또는 비밀번호가 잘못 되었습니다. 아이디와 비밀번호를 정확히 입력해 주세요.";
 
   function getTrimmedValue(input) {
     return input.value.trim();
@@ -31,6 +29,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function sanitizeRole(role) {
     return role === "ADMIN" ? "ADMIN" : "GUEST";
+  }
+
+  function getLoginErrorMessage(error) {
+    const errorMessage = error && error.message ? error.message : "";
+    const tryCount =
+      error &&
+      error.data &&
+      error.data.data &&
+      typeof error.data.data.try_count === "number"
+        ? error.data.data.try_count
+        : null;
+
+    if (errorMessage === "Wrong Password") {
+      if (tryCount !== null) {
+        return `비밀번호가 올바르지 않습니다. 로그인 실패 ${tryCount}회입니다.`;
+      }
+
+      return "비밀번호가 올바르지 않습니다.";
+    }
+
+    if (errorMessage === "Login Unavailable") {
+      return "로그인이 일시적으로 제한되었습니다. 30초 후 다시 시도해주세요.";
+    }
+
+    return "아이디 또는 비밀번호를 확인해주세요.";
   }
 
   function resolveRedirectUrl(role) {
@@ -102,7 +125,7 @@ document.addEventListener("DOMContentLoaded", () => {
       sessionStorage.setItem("user", JSON.stringify(user));
       window.location.href = resolveRedirectUrl(user.role);
     } catch (error) {
-      alert(INVALID_LOGIN_MESSAGE);
+      alert(getLoginErrorMessage(error));
     } finally {
       loginSubmitBtn.disabled = false;
     }

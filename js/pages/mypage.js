@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', async () => {
     checkUser(); // Redirect if not logged in
 
-    const TEMP_GUEST_LOGIN_ID = 'guest1234';
     const userIdElement = document.getElementById('user-id');
     const userNameElement = document.getElementById('user-name');
     const userPhoneElement = document.getElementById('user-phone');
@@ -26,26 +25,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             phone: myInfo.phone,
         }));
     } catch (error) {
-        const isTempGuestUser =
-            sessionUser.login_id === TEMP_GUEST_LOGIN_ID ||
-            sessionUser.id === TEMP_GUEST_LOGIN_ID ||
-            sessionUser.name === '테스트 게스트';
-
-        if (error.status === 404 && isTempGuestUser) {
-            userIdElement.textContent = TEMP_GUEST_LOGIN_ID;
-            userNameElement.textContent = sessionUser.name || '테스트 게스트';
-            userPhoneElement.textContent = sessionUser.phone || '-';
-
-            sessionStorage.setItem('user', JSON.stringify({
-                ...sessionUser,
-                id: TEMP_GUEST_LOGIN_ID,
-                login_id: TEMP_GUEST_LOGIN_ID,
-                name: sessionUser.name || '테스트 게스트',
-                phone: sessionUser.phone || '',
-            }));
-            return;
-        }
-
         alert('회원 정보를 불러오지 못했습니다.');
         return;
     }

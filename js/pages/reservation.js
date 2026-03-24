@@ -48,7 +48,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function renderEmptyState() {
-        reservationList.innerHTML = `<p>${EMPTY_MESSAGE}</p>`;
+        reservationList.innerHTML = `
+            <article class="reservation-empty">
+                <span class="reservation-empty-eyebrow">No Reservation</span>
+                <h2>예약 내역이 없습니다.</h2>
+                <p>${EMPTY_MESSAGE}</p>
+            </article>
+        `;
         paginationContainer.innerHTML = '';
     }
 
@@ -118,13 +124,26 @@ document.addEventListener('DOMContentLoaded', async () => {
                 <a href="room-detail.html?id=${reservation.room_id}" class="reservation-image-link">
                     <img src="${reservation.picture}" alt="${escapeHTML(reservation.room_name)}">
                 </a>
-                <div>
+                <div class="reservation-body">
+                    <div class="reservation-topline">
+                        <p class="reservation-date">예약일 ${formatDateTime(reservation.reservation_date)}</p>
+                        <span class="reservation-status status-${reservation.status.toLowerCase()}">${getStatusLabel(reservation.status)}</span>
+                    </div>
                     <h4><a href="room-detail.html?id=${reservation.room_id}">${escapeHTML(reservation.room_name)}</a></h4>
-                    <p>인원: ${reservation.guest_count}명</p>
-                    <p>가격: ${reservation.total_price.toLocaleString()}원</p>
-                    <p>날짜: ${formatStayPeriod(reservation.check_in, reservation.check_out)}</p>
-                    <p>예약일: ${formatDateTime(reservation.reservation_date)}</p>
-                    <p>상태: <span class="reservation-status status-${reservation.status.toLowerCase()}">${getStatusLabel(reservation.status)}</span></p>
+                    <div class="reservation-meta">
+                        <div class="reservation-meta-item">
+                            <span class="reservation-meta-label">숙박 일정</span>
+                            <strong>${formatStayPeriod(reservation.check_in, reservation.check_out)}</strong>
+                        </div>
+                        <div class="reservation-meta-item">
+                            <span class="reservation-meta-label">인원</span>
+                            <strong>${reservation.guest_count}명</strong>
+                        </div>
+                        <div class="reservation-meta-item">
+                            <span class="reservation-meta-label">결제 금액</span>
+                            <strong>${reservation.total_price.toLocaleString()}원</strong>
+                        </div>
+                    </div>
                 </div>
                 ${isCancelableStatus(reservation.status) ? `
                     <div class="reservation-actions">

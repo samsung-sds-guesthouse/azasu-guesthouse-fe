@@ -6,62 +6,6 @@ function unwrapReservationResponse(response) {
     return response;
 }
 
-function isTempGuestUser() {
-    const user = JSON.parse(sessionStorage.getItem('user')) || {};
-    return (
-        user.login_id === 'guest1234' ||
-        user.id === 'guest1234' ||
-        user.name === '테스트 게스트'
-    );
-}
-
-function createDummyReservationsPage(page) {
-    const dummyReservations = [
-        {
-            id: 301,
-            room_id: 2,
-            room_name: '델타존',
-            check_in: '2026-04-12T15:00:00',
-            check_out: '2026-04-14T11:00:00',
-            status: 'CONFIRMED',
-            total_price: 240000,
-            guest_count: 2,
-            picture: 'https://via.placeholder.com/240x160?text=Delta',
-            reservation_date: '2026-03-21T10:30:00',
-        },
-        {
-            id: 302,
-            room_id: 4,
-            room_name: '하늘채',
-            check_in: '2026-04-05T15:00:00',
-            check_out: '2026-04-06T11:00:00',
-            status: 'PENDING',
-            total_price: 120000,
-            guest_count: 3,
-            picture: 'https://via.placeholder.com/240x160?text=Sky',
-            reservation_date: '2026-03-20T18:10:00',
-        },
-        {
-            id: 303,
-            room_id: 1,
-            room_name: '온유룸',
-            check_in: '2026-03-18T15:00:00',
-            check_out: '2026-03-19T11:00:00',
-            status: 'CANCELLED',
-            total_price: 98000,
-            guest_count: 1,
-            picture: 'https://via.placeholder.com/240x160?text=Onyu',
-            reservation_date: '2026-03-10T09:00:00',
-        },
-    ];
-
-    return {
-        list: page === 1 ? dummyReservations : [],
-        current_page: page,
-        max_page: 1,
-    };
-}
-
 function toImageSrc(picture) {
     if (!picture) {
         return 'https://via.placeholder.com/240x160?text=Room';
@@ -125,10 +69,6 @@ async function getMyReservations(page = 1) {
             throw error;
         }
 
-        if (isTempGuestUser()) {
-            return createDummyReservationsPage(page);
-        }
-
         return {
             list: [],
             current_page: page,
@@ -138,22 +78,14 @@ async function getMyReservations(page = 1) {
 }
 
 async function cancelReservation(reservationId) {
-    try {
-        const response = await fetchApi(`/api/v1/reservations/${reservationId}/delete`, {
-            method: 'POST',
-        });
-        const msg = extractApiMessage(response, 'FAIL');
+    const response = await fetchApi(`/api/v1/reservations/${reservationId}/delete`, {
+        method: 'POST',
+    });
+    const msg = extractApiMessage(response, 'FAIL');
 
-        if (msg !== 'SUCCESS') {
-            throw new Error('예약 취소에 실패했습니다.');
-        }
-
-        return { msg };
-    } catch (error) {
-        if (isTempGuestUser()) {
-            return { msg: 'SUCCESS' };
-        }
-
-        throw error;
+    if (msg !== 'SUCCESS') {
+        throw new Error('예약 취소에 실패했습니다.');
     }
+
+    return { msg };
 }

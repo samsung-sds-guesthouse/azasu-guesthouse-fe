@@ -293,7 +293,7 @@ input:checked + .slider:before {
 
 .reservation-item {
     display: grid;
-    grid-template-columns: 180px 1fr;
+    grid-template-columns: 180px 1fr auto;
     gap: 1rem;
     align-items: center;
     padding: 1rem;
@@ -319,6 +319,17 @@ input:checked + .slider:before {
 
 .reservation-item p {
     margin: 0.25rem 0;
+}
+
+.reservation-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-self: stretch;
+    align-items: center;
+}
+
+.cancel-btn {
+    white-space: nowrap;
 }
 
 .status-pending {
@@ -372,5 +383,9 @@ input:checked + .slider:before {
 
     .reservation-item {
         grid-template-columns: 1fr;
+    }
+
+    .reservation-actions {
+        justify-content: flex-start;
     }
 }

@@ -27,15 +27,21 @@ document.addEventListener('DOMContentLoaded', () => {
                     <a href="mypage.html">마이페이지</a>
                     <a href="#" id="logout-btn">로그아웃</a>
                 `;
-      }
-      document
-        .getElementById('logout-btn')
-        .addEventListener('click', async (event) => {
-          event.preventDefault();
+            }
+            document.getElementById('logout-btn').addEventListener('click', async (event) => {
+                event.preventDefault();
+                const logoutButton = event.currentTarget;
 
-          try {
-            const response = await logout();
-            const message = response.msg || 'SUCCESS';
+                if (logoutButton.dataset.pending === 'true') {
+                    return;
+                }
+
+                try {
+                    logoutButton.dataset.pending = 'true';
+                    logoutButton.style.pointerEvents = 'none';
+                    logoutButton.style.opacity = '0.6';
+                    const response = await logout();
+                    const message = response.msg || 'SUCCESS';
 
             if (message !== 'SUCCESS') {
               throw new Error(message);
@@ -46,6 +52,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     window.location.href = '/';
                 } catch (error) {
                     alert('로그아웃에 실패했습니다. 다시 시도해주세요.');
+                } finally {
+                    logoutButton.dataset.pending = 'false';
+                    logoutButton.style.pointerEvents = '';
+                    logoutButton.style.opacity = '';
                 }
             });
         } else {

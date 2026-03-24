@@ -7,6 +7,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const userPhoneElement = document.getElementById('user-phone');
     const changePasswordForm = document.getElementById('change-password-form');
     const withdrawForm = document.getElementById('withdraw-form');
+    const changePasswordBtn = changePasswordForm.querySelector('button[type="submit"]');
+    const withdrawBtn = withdrawForm.querySelector('button[type="submit"]');
     const sessionUser = JSON.parse(sessionStorage.getItem('user')) || {};
 
     try {
@@ -62,6 +64,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         try {
+            changePasswordBtn.disabled = true;
             await changePassword({
                 old_password: currentPassword,
                 new_password: newPassword,
@@ -71,6 +74,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             e.target.reset();
         } catch (error) {
             alert('비밀번호 변경에 실패했습니다.');
+        } finally {
+            changePasswordBtn.disabled = false;
         }
     });
 
@@ -78,13 +83,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         e.preventDefault();
 
         const password = document.getElementById('withdraw-password').value.trim();
-        const confirmation = confirm('정말 탈퇴하시겠습니까?');
+        const confirmation = confirm('예약 내역이 모두 삭제됩니다. 정말 탈퇴하시겠습니까?');
 
         if (!confirmation) {
             return;
         }
 
         try {
+            withdrawBtn.disabled = true;
             await withdrawUser(password);
             alert('회원 탈퇴 처리되었습니다.');
             sessionStorage.removeItem('user');
@@ -92,6 +98,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             window.location.href = '/';
         } catch (error) {
             alert('회원 탈퇴에 실패했습니다.');
+        } finally {
+            withdrawBtn.disabled = false;
         }
     });
 });

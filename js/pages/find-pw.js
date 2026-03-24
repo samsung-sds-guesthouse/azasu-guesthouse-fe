@@ -56,6 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
+      sendSmsBtn.disabled = true;
       await sendSmsVerification(phone);
       smsVerifyGroup.style.display = "flex";
       verifiedLoginId = "";
@@ -65,25 +66,31 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("인증번호가 발송되었습니다.");
     } catch (error) {
       alert("인증번호 발송을 완료했습니다. 문자를 확인해주세요.");
+    } finally {
+      sendSmsBtn.disabled = false;
     }
   });
 
   verifySmsBtn.addEventListener("click", () => {
+    verifySmsBtn.disabled = true;
     const loginId = getTrimmedValue(usernameInput);
     const phone = getTrimmedValue(phoneInput);
     const code = getTrimmedValue(smsCodeInput);
 
     if (!isValidLoginId(loginId)) {
+      verifySmsBtn.disabled = false;
       alert("아이디는 8자 이상 15자 이하로 입력해주세요.");
       return;
     }
 
     if (!PHONE_PATTERN.test(phone)) {
+      verifySmsBtn.disabled = false;
       alert("유효한 전화번호 형식이 아닙니다. (예시 : 01012345678)");
       return;
     }
 
     if (!SMS_CODE_PATTERN.test(code)) {
+      verifySmsBtn.disabled = false;
       alert("인증번호 6자리를 정확히 입력해주세요.");
       return;
     }
@@ -92,6 +99,7 @@ document.addEventListener("DOMContentLoaded", () => {
     verifiedPhone = phone;
     verifiedCode = code;
     resetPwForm.style.display = "block";
+    verifySmsBtn.disabled = false;
     alert("인증번호가 확인되었습니다. 새 비밀번호를 입력해주세요.");
   });
 
@@ -124,6 +132,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
+      const resetSubmitBtn = resetPwForm.querySelector('button[type="submit"]');
+      resetSubmitBtn.disabled = true;
       await resetPasswordByFindPw({
         login_id: loginId,
         new_password: newPassword,
@@ -134,6 +144,7 @@ document.addEventListener("DOMContentLoaded", () => {
       window.location.href = "login.html";
     } catch (error) {
       alert("비밀번호 변경에 실패했습니다.");
+      resetPwForm.querySelector('button[type="submit"]').disabled = false;
     }
   });
 });

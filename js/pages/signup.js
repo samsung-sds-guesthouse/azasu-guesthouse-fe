@@ -151,6 +151,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
+      checkUsernameBtn.disabled = true;
       const response = await checkUsernameAvailability(loginId);
       isUsernameChecked = response.available;
       checkedUsername = loginId;
@@ -160,6 +161,8 @@ document.addEventListener("DOMContentLoaded", () => {
       resetUsernameCheck();
       validateForm();
       alert("사용할 수 없는 아이디입니다.");
+    } finally {
+      checkUsernameBtn.disabled = false;
     }
   });
 
@@ -186,6 +189,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
+      sendSmsBtn.disabled = true;
       await sendSmsVerification(phone);
       smsRequestedPhone = phone;
       smsSendCount += 1;
@@ -201,6 +205,8 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("인증번호가 발송되었습니다. 5분 이내에 인증을 완료해주세요.");
     } catch (error) {
       alert("인증번호 발송을 완료했습니다. 문자를 확인해주세요.");
+    } finally {
+      sendSmsBtn.disabled = false;
     }
   });
 
@@ -234,6 +240,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
+      verifySmsBtn.disabled = true;
       const response = await verifySmsCode(phone, code);
       if (!response.success) {
         throw new Error("인증번호가 일치하지 않습니다.");
@@ -246,6 +253,8 @@ document.addEventListener("DOMContentLoaded", () => {
       validateForm();
     } catch (error) {
       alert("인증에 실패했습니다.");
+    } finally {
+      verifySmsBtn.disabled = false;
     }
   });
 
@@ -294,6 +303,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
+      signupBtn.disabled = true;
       const response = await signupUser({
         login_id: loginId,
         password,
@@ -315,6 +325,8 @@ document.addEventListener("DOMContentLoaded", () => {
       window.location.href = "login.html";
     } catch (error) {
       alert("회원가입에 실패했습니다.");
+    } finally {
+      validateForm();
     }
   });
 

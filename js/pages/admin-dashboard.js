@@ -1,6 +1,13 @@
 document.addEventListener('DOMContentLoaded', async () => {
     checkAdmin();
 
+    const navigationEntries = performance.getEntriesByType('navigation');
+    const navigationType = navigationEntries.length > 0 ? navigationEntries[0].type : '';
+    if (navigationType === 'back_forward') {
+        window.location.reload();
+        return;
+    }
+
     const ROOM_EDIT_DRAFT_KEY = 'adminRoomEditDraft';
     const roomListContainer = document.getElementById('admin-room-list');
     const reservationListContainer = document.getElementById('admin-reservation-list');
@@ -247,6 +254,32 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
+    function bindPageVisibilityEvents() {
+        window.addEventListener('pageshow', async (event) => {
+            const pageNavigationEntries = performance.getEntriesByType('navigation');
+            const pageNavigationType = pageNavigationEntries.length > 0 ? pageNavigationEntries[0].type : '';
+
+            if (event.persisted || pageNavigationType === 'back_forward') {
+                window.location.reload();
+                return;
+            }
+
+            if (!roomsSection.hidden) {
+                await loadRooms();
+            }
+        });
+
+        document.addEventListener('visibilitychange', async () => {
+            if (document.visibilityState !== 'visible') {
+                return;
+            }
+
+            if (!roomsSection.hidden) {
+                await loadRooms();
+            }
+        });
+    }
+
     function bindDelegatedEvents() {
         roomListContainer.addEventListener('change', async (event) => {
             const target = event.target;
@@ -291,6 +324,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     bindNavigationEvents();
+    bindPageVisibilityEvents();
     bindDelegatedEvents();
     setActiveSection(SECTION.ROOMS);
     await loadRooms();

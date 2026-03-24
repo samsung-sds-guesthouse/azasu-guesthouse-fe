@@ -15,7 +15,10 @@
 
     <!-- ── Hero ── -->
     <section class="hero" id="hero">
-      <div class="hero-bg" id="heroBg"></div>
+      <div class="hero-bg" id="heroBg">
+        <!-- 슬라이드는 아래 스크립트에서 동적으로 생성 -->
+      </div>
+      <div class="hero-indicators" id="heroIndicators"></div>
       <div class="hero-overlay"></div>
       <div class="hero-content">
         <span class="hero-eyebrow">Azasu Guesthouse · 아자수 게스트하우스</span>
@@ -101,13 +104,65 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="js/pages/main.js"></script>
     <script>
-      // 히어로 패럴랙스 + 헤더 스크롤 처리
+      // ── Hero 슬라이드쇼 ──
+      const HERO_IMAGES = [
+        'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/15/d6/a2/20/caption.jpg?w=1100&h=-1&s=1',
+        'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/0e/d2/59/d7/caption.jpg?w=2000&h=-1&s=1',
+        'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/2b/bb/1e/c6/you-can-appreciate-seasonal.jpg?w=1200&h=-1&s=1',
+        'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1d/10/b9/6b/caption.jpg?w=1400&h=-1&s=1',
+      ];
+
       const heroBg = document.getElementById('heroBg');
+      const indicatorsEl = document.getElementById('heroIndicators');
       const headerEl = document.getElementById('header');
-      window.addEventListener('load', () => { if (heroBg) heroBg.classList.add('loaded'); });
+      let currentSlide = 0;
+      let slideTimer = null;
+
+      // 슬라이드 + 인디케이터 생성 (active 없이 시작)
+      const slides = HERO_IMAGES.map((src, i) => {
+        const el = document.createElement('div');
+        el.className = 'hero-slide';
+        el.style.backgroundImage = `url('${src}')`;
+        heroBg.appendChild(el);
+
+        const dot = document.createElement('div');
+        dot.className = 'hero-indicator';
+        dot.addEventListener('click', () => goToSlide(i));
+        indicatorsEl.appendChild(dot);
+
+        return el;
+      });
+
+      const dots = indicatorsEl.querySelectorAll('.hero-indicator');
+
+      function goToSlide(idx) {
+        slides[currentSlide].classList.remove('active');
+        dots[currentSlide].classList.remove('active');
+        currentSlide = idx;
+        slides[currentSlide].classList.add('active');
+        dots[currentSlide].classList.add('active');
+      }
+
+      function nextSlide() {
+        const next = (currentSlide + 1) % slides.length;
+        goToSlide(next);
+      }
+
+      window.addEventListener('load', () => {
+        heroBg.classList.add('loaded');
+        // 브라우저가 opacity:0 상태로 한 번 페인트한 뒤 active 추가 → 페이드인 발동
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            slides[0].classList.add('active');
+            dots[0].classList.add('active');
+            slideTimer = setInterval(nextSlide, 5000);
+          });
+        });
+      });
+
+      // 헤더 스크롤 처리
       window.addEventListener('scroll', () => {
         headerEl.classList.toggle('scrolled', window.scrollY > 60);
-        if (heroBg) heroBg.style.transform = `scale(1) translateY(${window.scrollY * 0.25}px)`;
       });
     </script>
   </body>

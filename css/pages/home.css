@@ -13,14 +13,48 @@
 .hero-bg {
   position: absolute;
   inset: 0;
-  background-image: url('https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=1920&q=80');
-  background-size: cover;
-  background-position: center 30%;
-  transform: scale(1.05);
-  transition: transform 8s ease-out;
 }
 
-.hero-bg.loaded { transform: scale(1); }
+.hero-slide {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center 30%;
+  opacity: 0;
+  transform: scale(1.05);
+  transition: opacity 1.2s ease-in-out, transform 8s ease-out;
+}
+
+.hero-slide.active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.hero-bg.loaded .hero-slide.active { transform: scale(1); }
+
+/* 슬라이드 인디케이터 */
+.hero-indicators {
+  position: absolute;
+  bottom: 5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.5rem;
+  z-index: 10;
+}
+
+.hero-indicator {
+  width: 24px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.35);
+  cursor: pointer;
+  transition: background 0.3s, width 0.3s;
+}
+
+.hero-indicator.active {
+  background: var(--gold-light);
+  width: 40px;
+}
 
 .hero-overlay {
   position: absolute;

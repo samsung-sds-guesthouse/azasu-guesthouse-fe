@@ -3,6 +3,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const usernameInput = document.getElementById("username");
   const passwordInput = document.getElementById("password");
   const passwordConfirmInput = document.getElementById("password-confirm");
+  const passwordConfirmMessage = document.getElementById(
+    "password-confirm-message",
+  );
   const nameInput = document.getElementById("name");
   const phoneInput = document.getElementById("phone");
   const smsCodeInput = document.getElementById("sms-code");
@@ -141,6 +144,29 @@ document.addEventListener("DOMContentLoaded", () => {
       isSmsStateValid &&
       isPasswordMatch
     );
+  }
+
+  function updatePasswordConfirmFeedback() {
+    const password = passwordInput.value;
+    const passwordConfirm = passwordConfirmInput.value;
+
+    if (!passwordConfirm) {
+      passwordConfirmMessage.hidden = true;
+      passwordConfirmMessage.textContent = "";
+      passwordConfirmInput.removeAttribute("aria-invalid");
+      return;
+    }
+
+    if (password === passwordConfirm) {
+      passwordConfirmMessage.hidden = true;
+      passwordConfirmMessage.textContent = "";
+      passwordConfirmInput.removeAttribute("aria-invalid");
+      return;
+    }
+
+    passwordConfirmMessage.hidden = false;
+    passwordConfirmMessage.textContent = "비밀번호가 일치하지 않습니다.";
+    passwordConfirmInput.setAttribute("aria-invalid", "true");
   }
 
   checkUsernameBtn.addEventListener("click", async () => {
@@ -360,9 +386,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
   [passwordInput, passwordConfirmInput, nameInput, smsCodeInput].forEach(
     (input) => {
-      input.addEventListener("input", validateForm);
+      input.addEventListener("input", () => {
+        if (input === passwordInput || input === passwordConfirmInput) {
+          updatePasswordConfirmFeedback();
+        }
+        validateForm();
+      });
     },
   );
 
+  updatePasswordConfirmFeedback();
   validateForm();
 });

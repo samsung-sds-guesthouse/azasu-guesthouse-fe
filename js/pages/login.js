@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const loginForm = document.getElementById("login-form");
   const usernameInput = document.getElementById("username");
   const passwordInput = document.getElementById("password");
+  const loginSubmitBtn = loginForm.querySelector('button[type="submit"]');
 
   const LOGIN_ID_MIN_LENGTH = 8;
   const LOGIN_ID_MAX_LENGTH = 15;
@@ -82,6 +83,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
+      loginSubmitBtn.disabled = true;
       const response = await login(loginId, password);
       const message = response.msg || "SUCCESS";
 
@@ -101,6 +103,8 @@ document.addEventListener("DOMContentLoaded", () => {
       window.location.href = resolveRedirectUrl(user.role);
     } catch (error) {
       alert(INVALID_LOGIN_MESSAGE);
+    } finally {
+      loginSubmitBtn.disabled = false;
     }
   });
 });

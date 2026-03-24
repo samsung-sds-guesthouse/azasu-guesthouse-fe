@@ -159,14 +159,6 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("사용 가능한 아이디입니다.");
       validateForm();
     } catch (error) {
-      if (ENABLE_TEMP_SIGNUP_BYPASS) {
-        isUsernameChecked = true;
-        checkedUsername = loginId;
-        alert("중복 체크 API가 준비되지 않아 임시로 통과 처리했습니다.");
-        validateForm();
-        return;
-      }
-
       resetUsernameCheck();
       validateForm();
       alert("사용할 수 없는 아이디입니다.");

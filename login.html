@@ -11,31 +11,36 @@
       <!-- Header content will be dynamically loaded by auth.js -->
     </header>
 
-    <main>
-      <h1>로그인</h1>
-      <form id="login-form">
-        <input
-          type="text"
-          id="username"
-          placeholder="아이디"
-          required
-          minlength="8"
-          maxlength="15"
-        />
-        <input
-          type="password"
-          id="password"
-          placeholder="비밀번호"
-          required
-          minlength="12"
-          maxlength="20"
-        />
-        <button type="submit">로그인</button>
-      </form>
-      <div class="login-links">
-        <a href="find-id.html">아이디 찾기</a>
-        <a href="find-pw.html">비밀번호 찾기</a>
-      </div>
+    <main class="auth-page">
+      <section class="auth-card">
+        <p class="auth-logo">AZASU GUESTHOUSE</p>
+        <p class="auth-subtitle">전통과 휴식이 머무는 공간으로 다시 돌아오세요</p>
+
+        <form id="login-form">
+          <input
+            type="text"
+            id="username"
+            placeholder="아이디"
+            required
+            minlength="8"
+            maxlength="15"
+          />
+          <input
+            type="password"
+            id="password"
+            placeholder="비밀번호"
+            required
+            minlength="12"
+            maxlength="20"
+          />
+          <button type="submit">로그인</button>
+        </form>
+
+        <div class="login-links">
+          <a href="find-id.html">아이디 찾기</a>
+          <a href="find-pw.html">비밀번호 찾기</a>
+        </div>
+      </section>
     </main>
 
     <script src="js/utils.js"></script>

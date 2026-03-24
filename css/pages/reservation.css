@@ -112,3 +112,112 @@
   .reservation-item { grid-template-columns: 1fr; }
   .reservation-actions { justify-content: flex-start; }
 }
+
+/* Mypage */
+.mypage-page {
+  padding-top: 7rem;
+}
+
+.mypage-hero {
+  max-width: 680px;
+}
+
+.mypage-intro {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.9;
+}
+
+.mypage-grid {
+  display: grid;
+  grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.mypage-actions {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.mypage-panel {
+  background: var(--white);
+  border: 1px solid var(--border-light);
+  padding: 2rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.mypage-panel-label {
+  font-size: 0.7rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 0.8rem;
+}
+
+.mypage-panel h2,
+.mypage-panel h3 {
+  font-size: 1.25rem;
+  font-weight: 300;
+  margin-bottom: 1.25rem;
+}
+
+.mypage-info-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.mypage-info-item {
+  padding: 1rem 0;
+  border-top: 1px solid var(--border-light);
+}
+
+.mypage-info-item:first-child {
+  padding-top: 0;
+  border-top: none;
+}
+
+.mypage-info-key {
+  display: block;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.45rem;
+}
+
+.mypage-info-item strong {
+  display: block;
+  font-size: 1rem;
+  color: var(--text);
+  word-break: break-all;
+}
+
+.mypage-panel form {
+  max-width: 100%;
+}
+
+.mypage-danger {
+  border-color: rgba(185, 28, 28, 0.16);
+  background: #fffaf9;
+}
+
+.mypage-danger-text {
+  font-size: 0.83rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+.danger-btn {
+  background: #7f1d1d;
+}
+
+.danger-btn:hover {
+  background: #991b1b;
+}
+
+@media (max-width: 900px) {
+  .mypage-grid {
+    grid-template-columns: 1fr;
+  }
+}

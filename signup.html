@@ -11,105 +11,84 @@
       <!-- Header content will be dynamically loaded by auth.js -->
     </header>
 
-    <main>
-      <h1>회원가입</h1>
-      <form id="signup-form">
-        <div class="form-group">
-          <input
-            type="text"
-            id="username"
-            placeholder="아이디 (8~15자)"
-            required
-            minlength="8"
-            maxlength="15"
-          />
-          <button type="button" id="check-username-btn">중복 체크</button>
-        </div>
-        <div class="form-group">
-          <input
-            type="password"
-            id="password"
-            placeholder="비밀번호 (12~20자)"
-            required
-            minlength="12"
-            maxlength="20"
-          />
-        </div>
-        <div class="form-group">
-          <input
-            type="password"
-            id="password-confirm"
-            placeholder="비밀번호 확인"
-            required
-            minlength="12"
-            maxlength="20"
-          />
-        </div>
-        <div class="form-group">
-          <input
-            type="text"
-            id="name"
-            placeholder="이름 (1~30자)"
-            required
-            minlength="1"
-            maxlength="30"
-          />
-        </div>
-        <div class="form-group">
-          <input
-            type="tel"
-            id="phone"
-            placeholder="전화번호 (예시 : 01012345678)"
-            required
-            pattern="^010\\d{8}$"
-          />
-          <button type="button" id="send-sms-btn">인증번호 발송</button>
-        </div>
-        <div class="form-group" id="sms-verify-group" style="display: none">
-          <input
-            type="text"
-            id="sms-code"
-            placeholder="인증번호 6자리 입력"
-            inputmode="numeric"
-            maxlength="6"
-          />
-          <span id="sms-timer">5:00</span>
-          <button type="button" id="verify-sms-btn">인증 확인</button>
-        </div>
-        <button type="submit" id="signup-btn" disabled>회원가입</button>
-      </form>
+    <main class="auth-page">
+      <section class="auth-card">
+        <p class="auth-logo">AZASU GUESTHOUSE</p>
+        <p class="auth-subtitle">회원가입 후 아자수 게스트하우스의 예약 서비스를 이용해보세요</p>
+
+        <form id="signup-form">
+          <div class="form-group">
+            <input
+              type="text"
+              id="username"
+              placeholder="아이디 (8~15자)"
+              required
+              minlength="8"
+              maxlength="15"
+            />
+            <button type="button" id="check-username-btn">중복 체크</button>
+          </div>
+          <div class="form-group">
+            <input
+              type="password"
+              id="password"
+              placeholder="비밀번호 (12~20자)"
+              required
+              minlength="12"
+              maxlength="20"
+            />
+          </div>
+          <div class="form-group">
+            <input
+              type="password"
+              id="password-confirm"
+              placeholder="비밀번호 확인"
+              required
+              minlength="12"
+              maxlength="20"
+            />
+          </div>
+          <div class="form-group">
+            <input
+              type="text"
+              id="name"
+              placeholder="이름 (1~30자)"
+              required
+              minlength="1"
+              maxlength="30"
+            />
+          </div>
+          <div class="form-group">
+            <input
+              type="tel"
+              id="phone"
+              placeholder="전화번호 (예시 : 01012345678)"
+              required
+              pattern="^010\\d{8}$"
+            />
+            <button type="button" id="send-sms-btn">인증번호 발송</button>
+          </div>
+          <div class="form-group" id="sms-verify-group" style="display: none">
+            <input
+              type="text"
+              id="sms-code"
+              placeholder="인증번호 6자리 입력"
+              inputmode="numeric"
+              maxlength="6"
+            />
+            <span id="sms-timer">5:00</span>
+            <button type="button" id="verify-sms-btn">인증 확인</button>
+          </div>
+          <button type="submit" id="signup-btn" disabled>회원가입</button>
+        </form>
+      </section>
     </main>
 
     <script src="js/utils.js"></script>
     <script src="js/api/config.js"></script>
     <script src="js/api/auth.js"></script>
     <script src="js/auth.js"></script>
-    ="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Azasu Guesthouse — 전통과 현대가 만나는 료칸</title>
-    <link rel="stylesheet" href="css/style.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
-    </head>
-    <body>
-
-    <header id="header">
-        <!-- dynamically loaded by auth.js -->
-    </header>
-
-    <!-- ── Hero ── -->
-    <section class="hero" id="hero">
-        <div class="hero-bg" id="heroBg"></div>
-        <div class="hero-overlay"></div>
-        <div class="hero-content">
-            <span class="hero-eyebrow">Azasu Guesthouse · 아자수 게스트하우스</span>
-            <h1 class="hero-title">
-                자연 속에 깃든<br>일본 전통의 아름다움
-            </h1>
-            <div class="hero-divider">
-                <span>✦</span>
-            </div>
-            <p class="hero-subtitle">
-                백년의 고요함 속에서 완벽한 휴식을 경험하세요
-            </p>    <script src="js/components/header.js"></script>
+    <script src="js/components/header.js"></script>
     <script src="js/api/users.js"></script>
     <script src="js/pages/signup.js"></script>
   </body>

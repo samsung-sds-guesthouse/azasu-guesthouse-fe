@@ -138,7 +138,22 @@ async function getMyReservations(page = 1) {
 }
 
 async function cancelReservation(reservationId) {
-    console.log(`Cancelling reservation ${reservationId}`);
-    // DUMMY IMPLEMENTATION
-    return Promise.resolve({ success: true });
+    try {
+        const response = await fetchApi(`/api/v1/reservations/${reservationId}/delete`, {
+            method: 'POST',
+        });
+        const msg = extractApiMessage(response, 'FAIL');
+
+        if (msg !== 'SUCCESS') {
+            throw new Error('예약 취소에 실패했습니다.');
+        }
+
+        return { msg };
+    } catch (error) {
+        if (isTempGuestUser()) {
+            return { msg: 'SUCCESS' };
+        }
+
+        throw error;
+    }
 }

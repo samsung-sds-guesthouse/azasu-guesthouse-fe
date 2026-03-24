@@ -43,6 +43,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         return '대기';
     }
 
+    function isCancelableStatus(status) {
+        return status === 'PENDING' || status === 'CONFIRMED';
+    }
+
     function renderEmptyState() {
         reservationList.innerHTML = `<p>${EMPTY_MESSAGE}</p>`;
         paginationContainer.innerHTML = '';
@@ -120,10 +124,42 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <p>가격: ${reservation.total_price.toLocaleString()}원</p>
                     <p>날짜: ${formatStayPeriod(reservation.check_in, reservation.check_out)}</p>
                     <p>예약일: ${formatDateTime(reservation.reservation_date)}</p>
-                    <p>상태: <span class="status-${reservation.status.toLowerCase()}">${getStatusLabel(reservation.status)}</span></p>
+                    <p>상태: <span class="reservation-status status-${reservation.status.toLowerCase()}">${getStatusLabel(reservation.status)}</span></p>
                 </div>
+                ${isCancelableStatus(reservation.status) ? `
+                    <div class="reservation-actions">
+                        <button type="button" class="cancel-btn" data-id="${reservation.id}">예약 취소</button>
+                    </div>
+                ` : '<div class="reservation-actions"></div>'}
             `;
             reservationList.appendChild(item);
+        });
+
+        reservationList.querySelectorAll('.cancel-btn').forEach((button) => {
+            button.addEventListener('click', async (event) => {
+                const cancelButton = event.currentTarget;
+                const reservationId = cancelButton.dataset.id;
+                const confirmation = confirm('정말 예약을 취소하시겠습니까?');
+
+                if (!confirmation) {
+                    return;
+                }
+
+                try {
+                    cancelButton.disabled = true;
+                    await cancelReservation(reservationId);
+
+                    const reservationItem = cancelButton.closest('.reservation-item');
+                    const statusElement = reservationItem.querySelector('.reservation-status');
+                    statusElement.textContent = '취소';
+                    statusElement.className = 'reservation-status status-cancelled';
+                    cancelButton.remove();
+                    alert('예약이 취소되었습니다.');
+                } catch (error) {
+                    alert('예약 취소에 실패했습니다.');
+                    cancelButton.disabled = false;
+                }
+            });
         });
     }
 

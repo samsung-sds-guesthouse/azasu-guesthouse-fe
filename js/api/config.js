@@ -60,7 +60,14 @@ async function fetchApi(endpoint, options = {}) {
 
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({ message: 'An unknown error occurred' }));
-            throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+            const errorMessage = extractApiMessage(
+                errorData,
+                `HTTP error! status: ${response.status}`,
+            );
+            const apiError = new Error(errorMessage);
+            apiError.status = response.status;
+            apiError.data = errorData;
+            throw apiError;
         }
 
         return await response.json();

@@ -1,0 +1,26 @@
+/* ── Design Tokens ──────────────────────────────────────── */
+:root {
+  /* Color */
+  --bg:           #f5f0e8;
+  --bg-dark:      #1a1714;
+  --bg-card:      #faf7f2;
+  --gold:         #b8924a;
+  --gold-light:   #d4aa68;
+  --text:         #2c2420;
+  --text-muted:   #7a6e65;
+  --text-light:   #e8e0d4;
+  --border:       #ddd4c0;
+  --border-light: #ede8e0;
+  --white:        #ffffff;
+
+  /* Shadow */
+  --shadow-sm: 0 2px 12px rgba(28, 20, 12, 0.07);
+  --shadow-md: 0 8px 32px rgba(28, 20, 12, 0.12);
+  --shadow-lg: 0 20px 60px rgba(28, 20, 12, 0.18);
+
+  /* Motion */
+  --transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Shape */
+  --radius: 2px;
+}

@@ -1,45 +1,104 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>객실 추가 - Azasu Guesthouse</title>
-    <link rel="stylesheet" href="css/style.css">
-</head>
-<body>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
     <header id="header">
-        <!-- Header content will be dynamically loaded by auth.js -->
+      <!-- Header content will be dynamically loaded by auth.js -->
     </header>
 
     <main>
+      <div class="room-form-page-header">
         <h1>객실 추가</h1>
-        <form id="add-room-form">
-            <div class="form-group">
-                <label for="room-name">객실명 (20자 이하)</label>
-                <input type="text" id="room-name" required maxlength="20">
+        <p>대표 이미지를 먼저 확인하고 객실 정보를 입력해 주세요.</p>
+      </div>
+      <form id="add-room-form" class="room-form">
+        <div class="room-form-layout">
+          <section class="room-media-panel" aria-labelledby="room-media-title">
+            <h2 id="room-media-title">대표 이미지</h2>
+            <div
+              class="room-image-preview"
+              id="room-image-preview"
+              data-empty="true"
+            >
+              <img
+                id="room-image-preview-img"
+                alt="객실 이미지 미리보기"
+                hidden
+              />
+              <div class="room-image-placeholder" id="room-image-placeholder">
+                <strong>대표 이미지를 선택해 주세요</strong>
+              </div>
             </div>
             <div class="form-group">
-                <label for="room-image">사진 (15MB 이하, jpg/jpeg/webp/png)</label>
-                <input type="file" id="room-image" accept="image/jpeg, image/png, image/webp" required>
+              <label for="room-image"
+                >사진 (15MB 이하, jpg/jpeg/webp/png)</label
+              >
+              <input
+                type="file"
+                id="room-image"
+                accept="image/jpeg, image/png, image/webp"
+                required
+              />
+              <p class="form-hint" id="room-image-status">
+                아직 선택된 이미지가 없습니다.
+              </p>
             </div>
+          </section>
+
+          <section
+            class="room-fields-panel"
+            aria-labelledby="room-fields-title"
+          >
+            <div class="room-fields-panel-header">
+              <h2 id="room-fields-title">객실 정보</h2>
+              <p>예약 페이지에 노출될 기본 정보를 입력합니다.</p>
+            </div>
+
             <div class="form-group">
+              <label for="room-name">객실명 (20자 이하)</label>
+              <input type="text" id="room-name" required maxlength="20" />
+            </div>
+
+            <div class="room-form-inline">
+              <div class="form-group">
                 <label for="room-guests">인원수 (1~100)</label>
-                <input type="number" id="room-guests" required min="1" max="100">
-            </div>
-            <div class="form-group">
+                <input
+                  type="number"
+                  id="room-guests"
+                  required
+                  min="1"
+                  max="100"
+                />
+              </div>
+              <div class="form-group">
                 <label for="room-price">1박 가격</label>
-                <input type="number" id="room-price" required min="0">
+                <input type="number" id="room-price" required min="0" />
+              </div>
             </div>
+
             <div class="form-group">
-                <label for="room-description">설명 (2000자 이하)</label>
-                <textarea id="room-description" rows="5" maxlength="2000"></textarea>
+              <label for="room-description">설명 (2000자 이하)</label>
+              <textarea
+                id="room-description"
+                rows="6"
+                maxlength="2000"
+              ></textarea>
             </div>
+
             <div class="form-group">
-                <label for="room-rules">이용규칙 (2000자 이하)</label>
-                <textarea id="room-rules" rows="5" maxlength="2000"></textarea>
+              <label for="room-rules">이용규칙 (2000자 이하)</label>
+              <textarea id="room-rules" rows="6" maxlength="2000"></textarea>
             </div>
+
             <button type="submit">추가하기</button>
-        </form>
+          </section>
+        </div>
+      </form>
     </main>
 
     <script src="js/utils.js"></script>
@@ -47,6 +106,7 @@
     <script src="js/api/config.js"></script>
     <script src="js/api/auth.js"></script>
     <script src="js/api/admin.js"></script>
+    <script src="js/pages/admin-room-form.js"></script>
     <script src="js/pages/admin-room-add.js"></script>
-</body>
+  </body>
 </html>

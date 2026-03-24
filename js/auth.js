@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     sessionStorage.removeItem('token');
                     window.location.href = '/';
                 } catch (error) {
-                    alert(error.message || '로그아웃에 실패했습니다.');
+                    alert('로그아웃에 실패했습니다. 다시 시도해주세요.');
                 }
             });
         } else {

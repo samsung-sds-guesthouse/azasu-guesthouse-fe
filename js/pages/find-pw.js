@@ -64,7 +64,7 @@ document.addEventListener("DOMContentLoaded", () => {
       resetPwForm.style.display = "none";
       alert("인증번호가 발송되었습니다.");
     } catch (error) {
-      alert(error.message || "SMS 인증번호 발송에 실패했습니다.");
+      alert("인증번호 발송을 완료했습니다. 문자를 확인해주세요.");
     }
   });
 
@@ -133,7 +133,7 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("비밀번호가 성공적으로 변경되었습니다. 로그인 페이지로 이동합니다.");
       window.location.href = "login.html";
     } catch (error) {
-      alert(error.message || "비밀번호 변경에 실패했습니다.");
+      alert("비밀번호 변경에 실패했습니다.");
     }
   });
 });

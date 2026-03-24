@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
         }
 
-        alert(error.message || '회원 정보를 불러오지 못했습니다.');
+        alert('회원 정보를 불러오지 못했습니다.');
         window.location.href = 'login.html';
         return;
     }
@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             alert('비밀번호가 변경되었습니다.');
             e.target.reset();
         } catch (error) {
-            alert(error.message || '비밀번호 변경에 실패했습니다.');
+            alert('비밀번호 변경에 실패했습니다.');
         }
     });
 
@@ -91,7 +91,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             sessionStorage.removeItem('token');
             window.location.href = '/';
         } catch (error) {
-            alert(error.message || '회원 탈퇴에 실패했습니다.');
+            alert('회원 탈퇴에 실패했습니다.');
         }
     });
 });

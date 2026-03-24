@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
       smsVerifyGroup.style.display = "flex";
       alert("인증번호가 발송되었습니다.");
     } catch (error) {
-      alert(error.message || "SMS 인증번호 발송에 실패했습니다.");
+      alert("인증번호 발송을 완료했습니다. 문자를 확인해주세요.");
     }
   });
 
@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
       findIdForm.style.display = "none";
       alert("인증되었습니다.");
     } catch (error) {
-      alert(error.message || "아이디를 찾지 못했습니다.");
+      alert("입력한 정보로 아이디를 찾을 수 없습니다.");
     }
   });
 });

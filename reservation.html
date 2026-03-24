@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>예약 관리 - Azasu Guesthouse</title>
+    <title>내 예약 - Azasu Guesthouse</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -12,20 +12,22 @@
     </header>
 
     <main>
-        <h1>예약 관리</h1>
-         <div class="admin-controls">
-             <a href="admin-dashboard.html" class="button">객실 관리</a>
-        </div>
-        <div id="admin-reservation-list">
-            <!-- Admin reservation list will be populated here -->
-        </div>
+        <h1>내 예약</h1>
+        <section id="my-reservations">
+            <div id="reservation-list">
+                <!-- Reservation list will be populated here -->
+            </div>
+            <div id="pagination">
+                <!-- Pagination controls will be added here -->
+            </div>
+        </section>
     </main>
 
     <script src="js/utils.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/api/config.js"></script>
     <script src="js/api/auth.js"></script>
-    <script src="js/api/admin.js"></script>
-    <script src="js/pages/admin-reservation.js"></script>
+    <script src="js/api/reservations.js"></script>
+    <script src="js/pages/reservation.js"></script>
 </body>
 </html>

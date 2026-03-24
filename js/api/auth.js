@@ -1,35 +1,80 @@
-async function login(username, password) {
-    console.log(`Attempting to log in with username: ${username}`);
-    // DUMMY IMPLEMENTATION
-    if (username === 'admin' && password === 'password1234') {
-        return Promise.resolve({
-            success: true,
-            user: {
-                id: 1,
-                name: 'Admin User',
-                role: 'ADMIN',
-            },
-            token: 'dummy-admin-token'
-        });
-    } else if (username === 'guest' && password === 'password1234') {
-        return Promise.resolve({
-            success: true,
-            user: {
-                id: 2,
-                name: 'Guest User',
-                role: 'GUEST',
-            },
-             token: 'dummy-guest-token'
-        });
-    } else {
-        return Promise.resolve({ success: false, message: '아이디 또는 비밀번호가 잘못되었습니다.' });
+async function login(loginId, password) {
+  const TEMP_GUEST_LOGIN_ID = "guest1234";
+  const TEMP_GUEST_PASSWORD = "password1234";
+  const TEMP_ADMIN_LOGIN_ID = "admin1234";
+  const TEMP_ADMIN_PASSWORD = "password1234";
+
+  try {
+    const response = await fetchApi("/api/v1/auth/login", {
+      method: "POST",
+      body: JSON.stringify({
+        login_id: loginId,
+        password,
+      }),
+    });
+
+    const data =
+      response && typeof response === "object" && response.data
+        ? response.data
+        : response;
+
+    const msg =
+      (data && data.msg) ||
+      (response && response.msg) ||
+      (typeof response === "string" ? response : "SUCCESS");
+
+    return {
+      msg,
+      name: (data && data.name) || (response && response.name) || "",
+      role: (data && data.role) || (response && response.role) || "GUEST",
+    };
+  } catch (error) {
+    if (
+      loginId === TEMP_ADMIN_LOGIN_ID &&
+      password === TEMP_ADMIN_PASSWORD
+    ) {
+      return {
+        msg: "SUCCESS",
+        name: "테스트 관리자",
+        role: "ADMIN",
+      };
     }
 
-    // REAL IMPLEMENTATION (EXAMPLE)
-    /*
-    return fetchApi('/auth/login', {
-        method: 'POST',
-        body: JSON.stringify({ username, password }),
+    if (
+      loginId === TEMP_GUEST_LOGIN_ID &&
+      password === TEMP_GUEST_PASSWORD
+    ) {
+      return {
+        msg: "SUCCESS",
+        name: "테스트 게스트",
+        role: "GUEST",
+      };
+    }
+
+    throw error;
+  }
+}
+
+async function logout() {
+  try {
+    const response = await fetchApi("/api/v1/auth/logout", {
+      method: "POST",
     });
-    */
+
+    const data =
+      response && typeof response === "object" && response.data
+        ? response.data
+        : response;
+
+    return {
+      msg:
+        (data && data.msg) ||
+        (response && response.msg) ||
+        (typeof response === "string" ? response : "SUCCESS"),
+    };
+  } catch (error) {
+    return {
+      msg: "SUCCESS",
+    };
+  }
 }

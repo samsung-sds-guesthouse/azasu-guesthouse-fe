@@ -11,21 +11,51 @@
         <!-- Header content will be dynamically loaded by auth.js -->
     </header>
 
-    <main>
-        <h1>객실 관리</h1>
-        <div class="admin-controls">
-             <a href="admin-reservation.html" class="button">예약 관리</a>
-             <a href="admin-room-add.html" class="button">객실 추가</a>
-        </div>
-       
-        <div id="admin-room-list">
-            <!-- Admin room list will be populated here -->
-        </div>
+    <main class="admin-layout">
+        <aside class="admin-sidebar" aria-label="관리자 메뉴">
+            <h1 class="admin-sidebar-title">관리자</h1>
+            <nav class="admin-sidebar-nav">
+                <button type="button" class="admin-nav-btn active" data-section="rooms" aria-pressed="true">
+                    객실관리
+                </button>
+                <button type="button" class="admin-nav-btn" data-section="reservations" aria-pressed="false">
+                    예약관리
+                </button>
+            </nav>
+        </aside>
+
+        <section class="admin-content">
+            <section id="admin-rooms-section" class="admin-section">
+                <div class="admin-section-header">
+                    <div>
+                        <h2>객실관리</h2>
+                        <p>객실 정보와 활성 상태를 관리할 수 있습니다.</p>
+                    </div>
+                    <a href="admin-room-add.html" class="button">객실 추가</a>
+                </div>
+                <div id="admin-room-list">
+                    <!-- Admin room list will be populated here -->
+                </div>
+            </section>
+
+            <section id="admin-reservations-section" class="admin-section" hidden>
+                <div class="admin-section-header">
+                    <div>
+                        <h2>예약관리</h2>
+                        <p>예약 현황을 확인하고 상태를 변경할 수 있습니다.</p>
+                    </div>
+                </div>
+                <div id="admin-reservation-list">
+                    <!-- Admin reservation list will be populated here -->
+                </div>
+            </section>
+        </section>
     </main>
 
     <script src="js/utils.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/api/config.js"></script>
+    <script src="js/api/auth.js"></script>
     <script src="js/api/rooms.js"></script>
     <script src="js/api/admin.js"></script>
     <script src="js/pages/admin-dashboard.js"></script>

@@ -47,7 +47,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         alert('회원 정보를 불러오지 못했습니다.');
-        window.location.href = 'login.html';
         return;
     }
 

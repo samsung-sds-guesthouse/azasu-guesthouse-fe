@@ -41,15 +41,15 @@ document.addEventListener('DOMContentLoaded', () => {
               throw new Error(message);
             }
 
-            sessionStorage.removeItem('user');
-            sessionStorage.removeItem('token');
-            window.location.href = '/';
-          } catch (error) {
-            alert(error.message || '로그아웃에 실패했습니다.');
-          }
-        });
-    } else {
-      navLinks.innerHTML = `
+                    sessionStorage.removeItem('user');
+                    sessionStorage.removeItem('token');
+                    window.location.href = '/';
+                } catch (error) {
+                    alert('로그아웃에 실패했습니다. 다시 시도해주세요.');
+                }
+            });
+        } else {
+            navLinks.innerHTML = `
                 <a href="login.html">로그인</a>
                 <a href="signup.html">회원가입</a>
             `;

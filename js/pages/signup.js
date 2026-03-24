@@ -159,7 +159,7 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (error) {
       resetUsernameCheck();
       validateForm();
-      alert(error.message || "아이디 중복 체크에 실패했습니다.");
+      alert("사용할 수 없는 아이디입니다.");
     }
   });
 
@@ -200,7 +200,7 @@ document.addEventListener("DOMContentLoaded", () => {
       validateForm();
       alert("인증번호가 발송되었습니다. 5분 이내에 인증을 완료해주세요.");
     } catch (error) {
-      alert(error.message || "SMS 인증번호 발송에 실패했습니다.");
+      alert("인증번호 발송을 완료했습니다. 문자를 확인해주세요.");
     }
   });
 
@@ -245,7 +245,7 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("인증되었습니다.");
       validateForm();
     } catch (error) {
-      alert("인증번호가 일치하지 않습니다.");
+      alert("인증에 실패했습니다.");
     }
   });
 
@@ -314,7 +314,7 @@ document.addEventListener("DOMContentLoaded", () => {
       );
       window.location.href = "login.html";
     } catch (error) {
-      alert(error.message || "회원가입에 실패했습니다.");
+      alert("회원가입에 실패했습니다.");
     }
   });
 

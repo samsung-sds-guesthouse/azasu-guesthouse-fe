@@ -90,6 +90,8 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       const user = {
+        id: escapeHTML(response.login_id || loginId),
+        login_id: escapeHTML(response.login_id || loginId),
         name: escapeHTML(response.name || ""),
         role: sanitizeRole(response.role),
       };

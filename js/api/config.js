@@ -28,13 +28,6 @@ function extractApiMessage(data, fallbackMessage) {
   return fallbackMessage;
 }
 
-/**
- * A wrapper for the fetch API to handle common tasks like setting headers
- * and handling errors.
- * @param {string} endpoint - The API endpoint to call.
- * @param {object} [options={}] - The options for the fetch call.
- * @returns {Promise<any>} - The JSON response from the API.
- */
 async function fetchApi(endpoint, options = {}) {
   const url = `${API_BASE_URL}${endpoint}`;
   const isFormData = options.body instanceof FormData;
@@ -42,7 +35,7 @@ async function fetchApi(endpoint, options = {}) {
     ...options.headers,
   };
 
-  if (!isFormData && !headers["Content-Type"]) {
+  if (options.body != null && !isFormData && !headers["Content-Type"]) {
     headers["Content-Type"] = "application/json";
   }
 

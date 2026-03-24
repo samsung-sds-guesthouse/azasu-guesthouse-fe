@@ -1,27 +1,22 @@
 /* =========================================================
-   AZASU GUESTHOUSE — CSS Entry Point
+   AZASU GUESTHOUSE CSS Entry Point
    모든 스타일은 아래 순서대로 @import 됩니다.
-   개별 파일을 수정하세요. 이 파일은 건드리지 않습니다.
+   개별 파일을 수정하세요. 이 파일은 엔트리 포인트입니다.
    ========================================================= */
 
-/* Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;600;700&family=Noto+Sans+KR:wght@300;400;500&display=swap');
 
-/* 1. Base — 디자인 토큰 & 리셋 */
 @import './base/variables.css';
 @import './base/reset.css';
 
-/* 2. Layout — 헤더 & 푸터 */
 @import './layout/header.css';
 @import './layout/footer.css';
 
-/* 3. Components — 재사용 UI 블록 */
 @import './components/buttons.css';
 @import './components/forms.css';
 @import './components/room-card.css';
 @import './components/booking-card.css';
 
-/* 4. Pages — 페이지별 전용 스타일 */
 @import './pages/home.css';
 @import './pages/room-detail.css';
 @import './pages/auth.css';

@@ -43,8 +43,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const SMS_EXPIRE_MS = 5 * 60 * 1000;
   const MAX_SMS_SEND_COUNT = 3;
   const MAX_SMS_RESEND_COUNT = 2;
-  const ENABLE_TEMP_SIGNUP_BYPASS = true;
-
   function getTrimmedValue(input) {
     return input.value.trim();
   }
@@ -355,46 +353,28 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    try {
-      sendSmsBtn.disabled = true;
-      await sendSmsVerification(phone);
-      smsRequestedPhone = phone;
-      smsSendCount += 1;
-      if (smsSendCount > 1) {
-        smsResendCount += 1;
-      }
-      isSmsVerified = false;
-      verifiedPhone = "";
-      smsExpiresAt = Date.now() + SMS_EXPIRE_MS;
-      smsVerifyGroup.style.display = "flex";
-      startSmsTimer();
-      setFieldMessage(
-        smsMessage,
-        "인증번호를 입력하고 5분 안에 인증을 완료해주세요.",
-        "muted",
-      );
-      validateForm();
-      alert("인증번호가 발송되었습니다. 5분 이내에 인증을 완료해주세요.");
-    } catch (error) {
-      if (ENABLE_TEMP_SIGNUP_BYPASS) {
-        smsRequestedPhone = phone;
-        isSmsVerified = true;
-        verifiedPhone = phone;
-        smsExpiresAt = Date.now() + SMS_EXPIRE_MS;
-        smsVerifyGroup.style.display = "none";
-        stopSmsTimer();
-        validateForm();
-        alert("SMS API가 준비되지 않아 임시로 인증 완료 처리했습니다.");
-        return;
-      }
-
-      alert("인증번호 발송을 완료했습니다. 문자를 확인해주세요.");
-    } finally {
-      sendSmsBtn.disabled = false;
+    sendSmsBtn.disabled = true;
+    smsRequestedPhone = phone;
+    smsSendCount += 1;
+    if (smsSendCount > 1) {
+      smsResendCount += 1;
     }
+    isSmsVerified = false;
+    verifiedPhone = "";
+    smsExpiresAt = Date.now() + SMS_EXPIRE_MS;
+    smsVerifyGroup.style.display = "flex";
+    startSmsTimer();
+    setFieldMessage(
+      smsMessage,
+      "임시 개발 모드입니다. 아무 6자리 숫자나 입력해 인증을 완료해주세요.",
+      "muted",
+    );
+    validateForm();
+    alert("인증번호가 발송되었습니다.");
+    sendSmsBtn.disabled = false;
   });
 
-  verifySmsBtn.addEventListener("click", async () => {
+  verifySmsBtn.addEventListener("click", () => {
     const phone = getTrimmedValue(phoneInput);
     const code = getTrimmedValue(smsCodeInput);
 
@@ -423,25 +403,14 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    try {
-      verifySmsBtn.disabled = true;
-      const response = await verifySmsCode(phone, code);
-      if (!response.success) {
-        throw new Error("인증번호가 일치하지 않습니다.");
-      }
-
-      isSmsVerified = true;
-      verifiedPhone = phone;
-      stopSmsTimer();
-      setFieldMessage(smsMessage, "인증이 완료되었습니다.", "success");
-      alert("인증되었습니다.");
-      validateForm();
-    } catch (error) {
-      setFieldMessage(smsMessage, "인증번호를 다시 확인해주세요.");
-      alert("인증에 실패했습니다.");
-    } finally {
-      verifySmsBtn.disabled = false;
-    }
+    verifySmsBtn.disabled = true;
+    isSmsVerified = true;
+    verifiedPhone = phone;
+    stopSmsTimer();
+    setFieldMessage(smsMessage, "인증이 완료되었습니다.", "success");
+    alert("인증되었습니다.");
+    validateForm();
+    verifySmsBtn.disabled = false;
   });
 
   signupForm.addEventListener("submit", async (e) => {

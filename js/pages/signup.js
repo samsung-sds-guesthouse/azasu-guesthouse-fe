@@ -199,7 +199,11 @@ document.addEventListener("DOMContentLoaded", () => {
         "비밀번호는 12자 이상 20자 이하로 입력해주세요.",
       );
     } else {
-      setFieldMessage(passwordMessage, "사용 가능한 비밀번호 길이입니다.", "success");
+      setFieldMessage(
+        passwordMessage,
+        "사용 가능한 비밀번호 길이입니다.",
+        "success",
+      );
     }
 
     if (!name) {
@@ -218,7 +222,11 @@ document.addEventListener("DOMContentLoaded", () => {
         "전화번호는 010으로 시작하는 11자리 숫자로 입력해주세요.",
       );
     } else if (isSmsStateValid) {
-      setFieldMessage(phoneMessage, "전화번호 인증이 완료되었습니다.", "success");
+      setFieldMessage(
+        phoneMessage,
+        "전화번호 인증이 완료되었습니다.",
+        "success",
+      );
     } else if (smsRequestedPhone === phone) {
       setFieldMessage(
         phoneMessage,
@@ -226,16 +234,16 @@ document.addEventListener("DOMContentLoaded", () => {
         "muted",
       );
     } else {
-      setFieldMessage(
-        phoneMessage,
-        "전화번호 인증을 진행해주세요.",
-        "muted",
-      );
+      setFieldMessage(phoneMessage, "전화번호 인증을 진행해주세요.", "muted");
     }
 
     if (!smsCodeInput.value.trim()) {
       if (!isSmsStateValid && smsRequestedPhone === phone && !isSmsExpired()) {
-        setFieldMessage(smsMessage, "인증번호 6자리를 입력해주세요.", "muted");
+        setFieldMessage(
+          smsMessage,
+          "인증번호 6자리를 입력해주세요.(API 개발중. 임의의 6자리 숫자 입력) ",
+          "muted",
+        );
       } else if (!smsRequestedPhone) {
         setFieldMessage(smsMessage, "");
       }
@@ -252,7 +260,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (statusParts.length === 0) {
-      setFieldMessage(statusMessage, "회원가입 준비가 완료되었습니다.", "success");
+      setFieldMessage(
+        statusMessage,
+        "회원가입 준비가 완료되었습니다.",
+        "success",
+      );
     } else {
       setFieldMessage(
         statusMessage,
@@ -261,8 +273,14 @@ document.addEventListener("DOMContentLoaded", () => {
       );
     }
 
-    setFieldValidity(usernameInput, isValidLoginId(loginId) || loginId.length === 0);
-    setFieldValidity(passwordInput, isValidPassword(password) || password.length === 0);
+    setFieldValidity(
+      usernameInput,
+      isValidLoginId(loginId) || loginId.length === 0,
+    );
+    setFieldValidity(
+      passwordInput,
+      isValidPassword(password) || password.length === 0,
+    );
     setFieldValidity(
       passwordConfirmInput,
       passwordConfirm.length === 0 || isPasswordMatch,

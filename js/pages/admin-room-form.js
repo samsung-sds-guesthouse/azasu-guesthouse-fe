@@ -24,10 +24,17 @@ function initAdminRoomForm(options = {}) {
     const imageStatus = document.getElementById('room-image-status');
     const urlParams = new URLSearchParams(window.location.search);
     const roomId = mode === 'edit' ? urlParams.get('id') : null;
+    const MIN_ROOM_CAPACITY = 1;
+    const MAX_ROOM_CAPACITY = 10;
     let objectUrl = '';
 
     if (roomImageInput) {
         roomImageInput.required = mode === 'add';
+    }
+
+    if (roomGuestsInput) {
+        roomGuestsInput.min = String(MIN_ROOM_CAPACITY);
+        roomGuestsInput.max = String(MAX_ROOM_CAPACITY);
     }
 
     if (mode === 'edit' && !roomId) {
@@ -216,6 +223,22 @@ function initAdminRoomForm(options = {}) {
         return formData;
     }
 
+    function validateRoomCapacity() {
+        const capacityValue = Number(roomGuestsInput.value);
+        const isValidCapacity = Number.isInteger(capacityValue)
+            && capacityValue >= MIN_ROOM_CAPACITY
+            && capacityValue <= MAX_ROOM_CAPACITY;
+
+        if (isValidCapacity) {
+            roomGuestsInput.setCustomValidity('');
+            return true;
+        }
+
+        roomGuestsInput.setCustomValidity(`인원수는 ${MIN_ROOM_CAPACITY}명부터 ${MAX_ROOM_CAPACITY}명까지 입력할 수 있습니다.`);
+        roomGuestsInput.reportValidity();
+        return false;
+    }
+
     async function loadRoomDetail() {
         try {
             const room = await getAdminRoom(roomId);
@@ -235,6 +258,9 @@ function initAdminRoomForm(options = {}) {
 
     async function handleSubmit(event) {
         event.preventDefault();
+        if (!validateRoomCapacity()) {
+            return;
+        }
         const confirmationMessage = mode === 'edit'
             ? '현재 입력한 내용으로 객실 정보를 수정하시겠습니까?'
             : '현재 입력한 내용으로 객실을 등록하시겠습니까?';
@@ -269,6 +295,9 @@ function initAdminRoomForm(options = {}) {
 
     form.addEventListener('submit', handleSubmit);
     roomImageInput.addEventListener('change', handleImageChange);
+    roomGuestsInput.addEventListener('input', () => {
+        roomGuestsInput.setCustomValidity('');
+    });
 
     if (mode === 'edit') {
         loadRoomDetail();

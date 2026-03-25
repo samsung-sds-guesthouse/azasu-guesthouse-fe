@@ -25,12 +25,26 @@ header.scrolled {
 }
 
 .logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
   font-family: 'Noto Serif KR', serif;
   font-size: 1.2rem;
   font-weight: 300;
   letter-spacing: 0.12em;
   color: var(--white);
   transition: color var(--transition);
+}
+
+.logo-mark {
+  width: 28px;
+  height: 28px;
+  flex: 0 0 auto;
+  display: block;
+}
+
+.logo span {
+  line-height: 1;
 }
 
 header.scrolled .logo { color: var(--text); }
@@ -84,4 +98,13 @@ header.scrolled .nav-btn-reserve:hover {
 
 @media (max-width: 768px) {
   header { padding: 0 1.5rem; }
+  .logo {
+    gap: 0.55rem;
+    font-size: 1.05rem;
+    letter-spacing: 0.1em;
+  }
+  .logo-mark {
+    width: 24px;
+    height: 24px;
+  }
 }

@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const reservationsSection = document.getElementById('admin-reservations-section');
     const navButtons = document.querySelectorAll('.admin-nav-btn');
     let currentRooms = [];
+    let currentReservations = [];
 
     const SECTION = {
         ROOMS: 'rooms',
@@ -130,7 +131,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 </thead>
                 <tbody>
                     ${reservations.map((reservation) => `
-                        <tr>
+                        <tr data-reservation-id="${reservation.id}">
                             <td>${escapeHTML(reservation.roomName)}</td>
                             <td>${reservation.guestCount}</td>
                             <td>${reservation.totalPrice.toLocaleString()}원</td>
@@ -169,8 +170,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         try {
             const reservationData = await getAllReservations();
-            const reservations = (reservationData.reservations || []).map(normalizeAdminReservation);
-            renderReservations(reservations);
+            currentReservations = (reservationData.reservations || []).map(normalizeAdminReservation);
+            renderReservations(currentReservations);
         } catch (error) {
             renderError(reservationListContainer, error.message || '예약 목록을 불러오지 못했습니다.');
         }
@@ -208,15 +209,22 @@ document.addEventListener('DOMContentLoaded', async () => {
         const reservationId = select.dataset.id;
         const nextStatus = select.value;
         const previousStatus = select.dataset.previousStatus || '';
+        const targetReservation = currentReservations.find((reservation) => String(reservation.id) === String(reservationId));
 
         select.disabled = true;
 
         try {
             await updateReservationStatus(reservationId, nextStatus);
-            await loadReservations();
+            if (targetReservation) {
+                targetReservation.status = nextStatus;
+            }
+            select.dataset.previousStatus = nextStatus;
             alert(`예약 ID ${reservationId}의 상태가 ${nextStatus}(으)로 변경되었습니다.`);
         } catch (error) {
             select.value = previousStatus;
+            if (targetReservation) {
+                targetReservation.status = previousStatus;
+            }
             alert(error.message || '예약 상태 변경에 실패했습니다.');
         } finally {
             select.disabled = false;

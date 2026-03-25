@@ -33,12 +33,19 @@ async function getRooms(searchParams = {}) {
 }
 
 async function getRoomDetail(roomId) {
-  const rooms = await getRooms();
-  const room = rooms.find((item) => String(item.id) === String(roomId));
+  return fetchApi(`/api/v1/rooms/${roomId}`, {
+    method: 'GET',
+  });
+}
 
-  if (room) {
-    return room;
-  }
-
-  throw new Error('객실 정보를 찾을 수 없습니다.');
+async function createReservation({ room_id, check_in, check_out, guest_count }) {
+  return fetchApi('/api/v1/reservations', {
+    method: 'POST',
+    body: JSON.stringify({
+      room_id,
+      check_in,
+      check_out,
+      guest_count,
+    }),
+  });
 }

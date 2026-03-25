@@ -24,44 +24,6 @@ document.addEventListener('DOMContentLoaded', () => {
     guestCountSelect.appendChild(option);
   }
 
-  function getRoomImageSource(picture) {
-    if (!picture) {
-      return 'https://via.placeholder.com/900x600?text=Room';
-    }
-
-    const trimmedPicture = picture.trim();
-
-    if (
-      trimmedPicture.startsWith('data:') ||
-      trimmedPicture.startsWith('http://') ||
-      trimmedPicture.startsWith('https://')
-    ) {
-      return trimmedPicture;
-    }
-
-    if (trimmedPicture.startsWith('/')) {
-      if (trimmedPicture.startsWith('/9j/')) {
-        return `data:image/jpeg;base64,${trimmedPicture}`;
-      }
-
-      return trimmedPicture;
-    }
-
-    if (trimmedPicture.startsWith('iVBOR')) {
-      return `data:image/png;base64,${trimmedPicture}`;
-    }
-
-    if (trimmedPicture.startsWith('R0lGOD')) {
-      return `data:image/gif;base64,${trimmedPicture}`;
-    }
-
-    if (trimmedPicture.startsWith('UklGR')) {
-      return `data:image/webp;base64,${trimmedPicture}`;
-    }
-
-    return `data:image/jpeg;base64,${trimmedPicture}`;
-  }
-
   function renderRooms(response) {
     const rooms = response?.data?.rooms || response?.rooms || [];
 

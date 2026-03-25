@@ -9,60 +9,100 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
+  function getRoomImageSource(picture) {
+    if (!picture) {
+      return 'https://via.placeholder.com/1200x800?text=Room';
+    }
+
+    const trimmedPicture = picture.trim();
+
+    if (
+      trimmedPicture.startsWith('data:') ||
+      trimmedPicture.startsWith('http://') ||
+      trimmedPicture.startsWith('https://')
+    ) {
+      return trimmedPicture;
+    }
+
+    if (trimmedPicture.startsWith('/')) {
+      if (trimmedPicture.startsWith('/9j/')) {
+        return `data:image/jpeg;base64,${trimmedPicture}`;
+      }
+
+      return trimmedPicture;
+    }
+
+    if (trimmedPicture.startsWith('iVBOR')) {
+      return `data:image/png;base64,${trimmedPicture}`;
+    }
+
+    if (trimmedPicture.startsWith('R0lGOD')) {
+      return `data:image/gif;base64,${trimmedPicture}`;
+    }
+
+    if (trimmedPicture.startsWith('UklGR')) {
+      return `data:image/webp;base64,${trimmedPicture}`;
+    }
+
+    return `data:image/jpeg;base64,${trimmedPicture}`;
+  }
+
   getRoomDetail(roomId)
-    .then((room) => {
-      document.title = `${escapeHTML(room.name)} — Azasu Guesthouse`;
+    .then((response) => {
+      const room = response?.data?.room || response?.room;
+      const reservedDates = response?.data?.reserved_dates || response?.reserved_dates || [];
 
-      const galleryHTML = (room.gsallery || [])
-        .map(
-          (src) =>
-            `<img src="${escapeHTML(src)}" alt="${escapeHTML(room.name)}" loading="lazy" />`,
-        )
-        .join('');
+      if (!room) {
+        throw new Error('객실 정보를 찾을 수 없습니다.');
+      }
 
-      const amenitiesHTML = (room.amenities || [])
-        .map((a) => `<div class="detail-amenity-item">${escapeHTML(a)}</div>`)
-        .join('');
+      const roomName = room.room_name || '';
+      const roomPrice = Number(room.price || 0);
+      const roomCapacity = Number(room.capacity || 0);
+      const roomDescription = room.description || '';
+      const roomPolicy = room.policy || '';
+      const roomImage = getRoomImageSource(room.picture || '');
+
+      document.title = `${escapeHTML(roomName)} | Azasu Guesthouse`;
 
       container.innerHTML = `
-        <!-- Hero -->
         <div class="detail-hero">
-          <img src="${escapeHTML(room.image)}" alt="${escapeHTML(room.name)}" />
+          <img src="${escapeHTML(roomImage)}" alt="${escapeHTML(roomName)}" />
           <div class="detail-hero-overlay"></div>
           <div class="detail-hero-title">
             <span style="font-size:0.7rem;letter-spacing:0.3em;color:var(--gold-light);display:block;margin-bottom:0.7rem;text-transform:uppercase;">
-              ${escapeHTML(room.name_en || room.category || '')}
+              Room ${room.room_id}
             </span>
-            <h1>${escapeHTML(room.name)}</h1>
+            <h1>${escapeHTML(roomName)}</h1>
           </div>
         </div>
 
-        <!-- Body -->
         <div class="detail-body">
-
-          <!-- Left: info -->
           <div class="detail-main">
-
-            <!-- Gallery strip -->
-            <div class="detail-gallery">${galleryHTML}</div>
+            <div class="detail-gallery">
+              <img src="${escapeHTML(roomImage)}" alt="${escapeHTML(roomName)}" loading="lazy" />
+            </div>
 
             <h2>객실 소개</h2>
-            <p class="detail-desc">${escapeHTML(room.description)}</p>
+            <p class="detail-desc">${escapeHTML(roomDescription)}</p>
 
-            <h2>객실 시설</h2>
-            <div class="detail-amenity-grid">${amenitiesHTML}</div>
+            <h2>객실 정보</h2>
+            <div class="detail-amenity-grid">
+              <div class="detail-amenity-item">객실 번호: ${escapeHTML(String(room.room_id || '-'))}</div>
+              <div class="detail-amenity-item">최대 인원: ${escapeHTML(String(roomCapacity || '-'))}명</div>
+              <div class="detail-amenity-item">1박 요금: ${escapeHTML(roomPrice.toLocaleString())}원</div>
+            </div>
 
             <div class="detail-rules">
               <h3>이용 규칙</h3>
-              <p>${escapeHTML(room.rules || '')}</p>
+              <p>${escapeHTML(roomPolicy)}</p>
             </div>
           </div>
 
-          <!-- Right: booking card -->
           <div>
             <div class="booking-card">
               <p class="booking-card-title">예약하기 · Reserve</p>
-              <p class="booking-price">${room.price.toLocaleString()}<span style="font-size:1rem;color:var(--text-muted)">원</span></p>
+              <p class="booking-price">${roomPrice.toLocaleString()}<span style="font-size:1rem;color:var(--text-muted)">원</span></p>
               <p class="booking-price-note">1박 기준 · 세금 및 봉사료 포함</p>
 
               <div class="booking-divider"></div>
@@ -73,9 +113,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 <label>인원</label>
                 <div class="guest-counter">
-                  <button type="button" id="minus-btn" aria-label="인원 감소">－</button>
+                  <button type="button" id="minus-btn" aria-label="인원 감소">-</button>
                   <span id="guest-count">1명</span>
-                  <button type="button" id="plus-btn" aria-label="인원 증가">＋</button>
+                  <button type="button" id="plus-btn" aria-label="인원 증가">+</button>
                 </div>
 
                 <button id="reserve-btn" disabled>예약 신청</button>
@@ -83,71 +123,92 @@ document.addEventListener('DOMContentLoaded', () => {
 
               <p class="booking-meta">
                 날짜 선택 후 예약 신청이 가능합니다.<br>
-                보증금 입금 완료 시 예약이 확정됩니다.
+                보증금 입금 완료 후 예약이 확정됩니다.
               </p>
             </div>
 
             <div style="padding:1.5rem 0;font-size:0.78rem;color:var(--text-muted);line-height:1.8;">
-              <p style="margin-bottom:0.3rem;">· 최대 인원: <strong>${room.max_guests}명</strong></p>
-              <p style="margin-bottom:0.3rem;">· 객실 면적: <strong>${escapeHTML(room.size || '-')}</strong></p>
-              <p>· 층수: <strong>${escapeHTML(room.floor || '-')}</strong></p>
+              <p style="margin-bottom:0.3rem;">· 최대 인원: <strong>${roomCapacity}명</strong></p>
+              <p style="margin-bottom:0.3rem;">· 객실 번호: <strong>${escapeHTML(String(room.room_id || '-'))}</strong></p>
+              <p>· 이용 정책: <strong>${escapeHTML(roomPolicy || '-')}</strong></p>
             </div>
           </div>
         </div>
       `;
 
-      // Flatpickr
+      const reserveButton = document.getElementById('reserve-btn');
+      const params = JSON.parse(sessionStorage.getItem('searchParams') || '{}');
+
       const datePicker = flatpickr('#date-range', {
         mode: 'range',
         dateFormat: 'Y-m-d',
         minDate: 'today',
-        locale: { rangeSeparator: ' → ' },
-        disable: room.unavailable_dates || [],
-        onChange: function (selectedDates) {
-          document.getElementById('reserve-btn').disabled =
-            selectedDates.length !== 2;
+        locale: { rangeSeparator: ' ~ ' },
+        disable: reservedDates,
+        onChange(selectedDates) {
+          reserveButton.disabled = selectedDates.length !== 2;
         },
       });
 
-      const params = JSON.parse(sessionStorage.getItem('searchParams') || '{}');
       if (params.startDate && params.endDate) {
         datePicker.setDate([params.startDate, params.endDate]);
-        document.getElementById('reserve-btn').disabled = false;
+        reserveButton.disabled = false;
       }
 
-      // Guest counter
-      let guestCount = parseInt(params.guests) || 1;
-      const maxGuests = room.max_guests;
+      let guestCount = parseInt(params.guests, 10) || 1;
+      const maxGuests = roomCapacity || 1;
       const guestDisplay = document.getElementById('guest-count');
 
       function updateDisplay() {
         guestDisplay.textContent = `${guestCount}명`;
       }
+
       updateDisplay();
 
       document.getElementById('minus-btn').addEventListener('click', () => {
         if (guestCount > 1) {
-          guestCount--;
+          guestCount -= 1;
           updateDisplay();
         }
       });
+
       document.getElementById('plus-btn').addEventListener('click', () => {
         if (guestCount < maxGuests) {
-          guestCount++;
+          guestCount += 1;
           updateDisplay();
         }
       });
-      ////
-      document.getElementById('reserve-btn').addEventListener('click', () => {
+
+      reserveButton.addEventListener('click', async () => {
         if (!checkUser()) return;
+
+        const selectedDates = datePicker.selectedDates;
+        if (selectedDates.length !== 2) return;
+
+        const checkIn = formatDate(selectedDates[0]);
+        const checkOut = formatDate(selectedDates[1]);
+
         const confirmation = confirm(
-          '보증금을 입금해야 최종적으로 예약이 완료됩니다.\n보증금은 환불이 되지 않습니다.\n\n예약을 신청하시겠습니까?',
+          '보증금을 입금해야 최종적으로 예약이 완료됩니다.\n보증금은 환불되지 않습니다.\n\n예약을 신청하시겠습니까?',
         );
-        if (confirmation) {
+
+        if (!confirmation) return;
+
+        try {
+          await createReservation({
+            room_id: Number(room.room_id),
+            check_in: checkIn,
+            check_out: checkOut,
+            guest_count: guestCount,
+          });
+
           alert(
-            '예약 신청이 완료되었습니다 (상태: 대기중).\n예약 내역 페이지로 이동합니다.',
+            '예약 신청이 완료되었습니다.(상태: 대기중)\n예약 내역 페이지로 이동합니다.',
           );
           window.location.href = 'reservation.html';
+        } catch (error) {
+          console.error(error);
+          alert(error.message || '예약 신청에 실패했습니다.');
         }
       });
     })

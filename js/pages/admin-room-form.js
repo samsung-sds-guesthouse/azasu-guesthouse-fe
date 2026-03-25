@@ -235,6 +235,14 @@ function initAdminRoomForm(options = {}) {
 
     async function handleSubmit(event) {
         event.preventDefault();
+        const confirmationMessage = mode === 'edit'
+            ? '현재 입력한 내용으로 객실 정보를 수정하시겠습니까?'
+            : '현재 입력한 내용으로 객실을 등록하시겠습니까?';
+
+        if (!window.confirm(confirmationMessage)) {
+            return;
+        }
+
         submitButton.disabled = true;
 
         try {

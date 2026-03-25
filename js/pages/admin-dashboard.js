@@ -186,6 +186,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         const nextValue = input.checked;
         const targetRoom = currentRooms.find((room) => String(room.id) === String(roomId));
         const previousValue = targetRoom ? targetRoom.isActive : !nextValue;
+        const roomName = targetRoom?.roomName || `Room ID ${roomId}`;
+        const confirmationMessage = nextValue
+            ? `"${roomName}" 객실을 활성화하시겠습니까?`
+            : `"${roomName}" 객실을 비활성화하시겠습니까?`;
+
+        if (!window.confirm(confirmationMessage)) {
+            input.checked = previousValue;
+            return;
+        }
 
         input.disabled = true;
 
@@ -210,6 +219,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         const nextStatus = select.value;
         const previousStatus = select.dataset.previousStatus || '';
         const targetReservation = currentReservations.find((reservation) => String(reservation.id) === String(reservationId));
+        const roomName = targetReservation?.roomName || `Reservation ID ${reservationId}`;
+
+        if (nextStatus === previousStatus) {
+            return;
+        }
+
+        if (!window.confirm(`"${roomName}" 예약 상태를 ${previousStatus}에서 ${nextStatus}(으)로 변경하시겠습니까?`)) {
+            select.value = previousStatus;
+            return;
+        }
 
         select.disabled = true;
 

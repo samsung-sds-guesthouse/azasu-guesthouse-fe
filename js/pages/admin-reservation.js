@@ -84,6 +84,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         const nextStatus = select.value;
         const previousStatus = select.dataset.previousStatus || '';
         const targetReservation = currentReservations.find((reservation) => String(reservation.id) === String(reservationId));
+        const roomName = targetReservation?.roomName || `Reservation ID ${reservationId}`;
+
+        if (nextStatus === previousStatus) {
+            return;
+        }
+
+        if (!window.confirm(`"${roomName}" 예약 상태를 ${previousStatus}에서 ${nextStatus}(으)로 변경하시겠습니까?`)) {
+            select.value = previousStatus;
+            return;
+        }
 
         select.disabled = true;
 

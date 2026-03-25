@@ -46,10 +46,24 @@
                 <article class="mypage-panel">
                     <p class="mypage-panel-label">Security</p>
                     <h3>비밀번호 변경</h3>
-                    <form id="change-password-form">
-                        <input type="password" id="current-password" placeholder="현재 비밀번호" required>
-                        <input type="password" id="new-password" placeholder="새 비밀번호" required minlength="12" maxlength="20">
-                        <input type="password" id="new-password-confirm" placeholder="새 비밀번호 확인" required>
+                    <form id="change-password-form" novalidate>
+                        <div class="form-group">
+                            <label for="current-password">현재 비밀번호</label>
+                            <input type="password" id="current-password" placeholder="현재 비밀번호" required aria-describedby="current-password-message">
+                            <p id="current-password-message" class="field-message" aria-live="polite" hidden></p>
+                        </div>
+                        <div class="form-group">
+                            <label for="new-password">새 비밀번호</label>
+                            <input type="password" id="new-password" placeholder="새 비밀번호" required minlength="12" maxlength="20" aria-describedby="new-password-message">
+                            <p id="new-password-message" class="field-message is-muted" aria-live="polite">
+                                비밀번호는 12자 이상 20자 이하로 입력해주세요.
+                            </p>
+                        </div>
+                        <div class="form-group">
+                            <label for="new-password-confirm">새 비밀번호 확인</label>
+                            <input type="password" id="new-password-confirm" placeholder="새 비밀번호 확인" required aria-describedby="new-password-confirm-message">
+                            <p id="new-password-confirm-message" class="field-message" aria-live="polite" hidden></p>
+                        </div>
                         <button type="submit">변경하기</button>
                     </form>
                 </article>
@@ -60,8 +74,12 @@
                     <p class="mypage-danger-text">
                         탈퇴 시 계정 정보와 관련 데이터가 삭제될 수 있습니다. 진행 전 다시 한 번 확인해주세요.
                     </p>
-                    <form id="withdraw-form">
-                        <input type="password" id="withdraw-password" placeholder="비밀번호 확인" required>
+                    <form id="withdraw-form" novalidate>
+                        <div class="form-group">
+                            <label for="withdraw-password">비밀번호 확인</label>
+                            <input type="password" id="withdraw-password" placeholder="비밀번호 확인" required aria-describedby="withdraw-password-message">
+                            <p id="withdraw-password-message" class="field-message" aria-live="polite" hidden></p>
+                        </div>
                         <button type="submit" id="delete-account-btn" class="danger-btn">회원 탈퇴</button>
                     </form>
                 </article>

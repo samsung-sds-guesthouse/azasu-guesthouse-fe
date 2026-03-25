@@ -3,6 +3,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const usernameInput = document.getElementById("username");
   const passwordInput = document.getElementById("password");
   const loginSubmitBtn = loginForm.querySelector('button[type="submit"]');
+  const usernameMessage = document.getElementById("login-username-message");
+  const passwordMessage = document.getElementById("login-password-message");
 
   const LOGIN_ID_MIN_LENGTH = 8;
   const LOGIN_ID_MAX_LENGTH = 15;
@@ -29,6 +31,58 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function sanitizeRole(role) {
     return role === "ADMIN" ? "ADMIN" : "GUEST";
+  }
+
+  function setFieldMessage(element, message, type = "error") {
+    element.textContent = message;
+    element.hidden = !message;
+    element.classList.toggle("is-success", type === "success");
+    element.classList.toggle("is-muted", type === "muted");
+  }
+
+  function setFieldValidity(input, isValid) {
+    if (isValid) {
+      input.removeAttribute("aria-invalid");
+      return;
+    }
+
+    input.setAttribute("aria-invalid", "true");
+  }
+
+  function validateLoginId(showMessage = false) {
+    const loginId = getTrimmedValue(usernameInput);
+    const isValid = isValidLoginId(loginId);
+
+    setFieldValidity(usernameInput, isValid || loginId.length === 0);
+
+    if (showMessage && !isValid) {
+      setFieldMessage(
+        usernameMessage,
+        "아이디는 8자 이상 15자 이하로 입력해주세요.",
+      );
+    } else {
+      setFieldMessage(usernameMessage, "");
+    }
+
+    return isValid;
+  }
+
+  function validatePassword(showMessage = false) {
+    const password = passwordInput.value;
+    const isValid = isValidPassword(password);
+
+    setFieldValidity(passwordInput, isValid || password.length === 0);
+
+    if (showMessage && !isValid) {
+      setFieldMessage(
+        passwordMessage,
+        "비밀번호는 12자 이상 20자 이하로 입력해주세요.",
+      );
+    } else {
+      setFieldMessage(passwordMessage, "");
+    }
+
+    return isValid;
   }
 
   function getLoginErrorMessage(error) {
@@ -95,12 +149,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const loginId = getTrimmedValue(usernameInput);
     const password = passwordInput.value;
 
-    if (!isValidLoginId(loginId)) {
+    if (!validateLoginId(true)) {
       alert("아이디는 8자 이상 15자 이하로 입력해주세요.");
       return;
     }
 
-    if (!isValidPassword(password)) {
+    if (!validatePassword(true)) {
       alert("비밀번호는 12자 이상 20자 이하로 입력해주세요.");
       return;
     }
@@ -129,5 +183,13 @@ document.addEventListener("DOMContentLoaded", () => {
     } finally {
       loginSubmitBtn.disabled = false;
     }
+  });
+
+  usernameInput.addEventListener("input", () => {
+    validateLoginId();
+  });
+
+  passwordInput.addEventListener("input", () => {
+    validatePassword();
   });
 });

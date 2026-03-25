@@ -26,6 +26,9 @@ function initAdminRoomForm(options = {}) {
   const roomId = mode === "edit" ? urlParams.get("id") : null;
   const MIN_ROOM_CAPACITY = 1;
   const MAX_ROOM_CAPACITY = 10;
+  const MAX_IMAGE_SIZE_BYTES = 15 * 1024 * 1024;
+  const ALLOWED_IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "webp"];
+  const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
   let objectUrl = "";
 
   if (roomImageInput) {
@@ -147,6 +150,61 @@ function initAdminRoomForm(options = {}) {
     return `data:${mimeType};base64,${pictureValue}`;
   }
 
+  function getImageValidationError(file) {
+    if (!file) {
+      return "";
+    }
+
+    const extension = file.name.includes(".")
+      ? file.name.split(".").pop().toLowerCase()
+      : "";
+    const isAllowedExtension = ALLOWED_IMAGE_EXTENSIONS.includes(extension);
+    const isAllowedMimeType = ALLOWED_IMAGE_TYPES.includes(file.type);
+
+    if (!isAllowedExtension || !isAllowedMimeType) {
+      return "이미지는 jpg, jpeg, png, webp 형식만 업로드할 수 있습니다.";
+    }
+
+    if (file.size > MAX_IMAGE_SIZE_BYTES) {
+      return "이미지 용량은 15MB 이하여야 합니다.";
+    }
+
+    return "";
+  }
+
+  async function isSupportedImageSignature(file) {
+    if (!file) {
+      return false;
+    }
+
+    const headerBuffer = await file.slice(0, 12).arrayBuffer();
+    const headerBytes = new Uint8Array(headerBuffer);
+
+    const isJpeg =
+      headerBytes.length >= 3 &&
+      headerBytes[0] === 0xff &&
+      headerBytes[1] === 0xd8 &&
+      headerBytes[2] === 0xff;
+
+    const isPng =
+      headerBytes.length >= 8 &&
+      headerBytes[0] === 0x89 &&
+      headerBytes[1] === 0x50 &&
+      headerBytes[2] === 0x4e &&
+      headerBytes[3] === 0x47 &&
+      headerBytes[4] === 0x0d &&
+      headerBytes[5] === 0x0a &&
+      headerBytes[6] === 0x1a &&
+      headerBytes[7] === 0x0a;
+
+    const isWebp =
+      headerBytes.length >= 12 &&
+      String.fromCharCode(...headerBytes.slice(0, 4)) === "RIFF" &&
+      String.fromCharCode(...headerBytes.slice(8, 12)) === "WEBP";
+
+    return isJpeg || isPng || isWebp;
+  }
+
   function populateForm(room) {
     const roomDetail = normalizeRoomDetail(room);
     const hasPicture = Boolean(roomDetail.picture);
@@ -174,7 +232,7 @@ function initAdminRoomForm(options = {}) {
     setEmptyPreview("No registered image.");
   }
 
-  function handleImageChange() {
+  async function handleImageChange() {
     const imageFile = roomImageInput.files[0];
 
     if (!imageFile) {
@@ -199,6 +257,58 @@ function initAdminRoomForm(options = {}) {
       }
 
       setEmptyPreview(fallbackMessage);
+      return;
+    }
+
+    const imageValidationError = getImageValidationError(imageFile);
+    if (imageValidationError) {
+      roomImageInput.value = "";
+
+      if (
+        mode === "edit" &&
+        currentImageElement &&
+        currentImageElement.textContent !== "-"
+      ) {
+        const currentImageSrc = imagePreviewImg?.dataset.originalSrc;
+        if (currentImageSrc) {
+          updateImagePreview({
+            src: currentImageSrc,
+            statusText: `Current image: ${currentImageElement.textContent}`,
+          });
+        } else {
+          setEmptyPreview("Using the current registered image.");
+        }
+      } else {
+        setEmptyPreview("No image selected yet.");
+      }
+
+      alert(imageValidationError);
+      return;
+    }
+
+    const hasValidImageSignature = await isSupportedImageSignature(imageFile);
+    if (!hasValidImageSignature) {
+      roomImageInput.value = "";
+
+      if (
+        mode === "edit" &&
+        currentImageElement &&
+        currentImageElement.textContent !== "-"
+      ) {
+        const currentImageSrc = imagePreviewImg?.dataset.originalSrc;
+        if (currentImageSrc) {
+          updateImagePreview({
+            src: currentImageSrc,
+            statusText: `Current image: ${currentImageElement.textContent}`,
+          });
+        } else {
+          setEmptyPreview("Using the current registered image.");
+        }
+      } else {
+        setEmptyPreview("No image selected yet.");
+      }
+
+      alert("파일 내용을 확인할 수 없거나 지원하지 않는 이미지 형식입니다.");
       return;
     }
 

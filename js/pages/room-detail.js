@@ -4,7 +4,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const roomId = urlParams.get('id');
 
   if (!roomId) {
-    container.innerHTML = '<div class="page-wrapper"><p>객실 정보를 찾을 수 없습니다.</p></div>';
+    container.innerHTML =
+      '<div class="page-wrapper"><p>객실 정보를 찾을 수 없습니다.</p></div>';
     return;
   }
 
@@ -12,12 +13,15 @@ document.addEventListener('DOMContentLoaded', () => {
     .then((room) => {
       document.title = `${escapeHTML(room.name)} — Azasu Guesthouse`;
 
-      const galleryHTML = (room.gallery || [])
-        .map(src => `<img src="${escapeHTML(src)}" alt="${escapeHTML(room.name)}" loading="lazy" />`)
+      const galleryHTML = (room.gsallery || [])
+        .map(
+          (src) =>
+            `<img src="${escapeHTML(src)}" alt="${escapeHTML(room.name)}" loading="lazy" />`,
+        )
         .join('');
 
       const amenitiesHTML = (room.amenities || [])
-        .map(a => `<div class="detail-amenity-item">${escapeHTML(a)}</div>`)
+        .map((a) => `<div class="detail-amenity-item">${escapeHTML(a)}</div>`)
         .join('');
 
       container.innerHTML = `
@@ -100,7 +104,8 @@ document.addEventListener('DOMContentLoaded', () => {
         locale: { rangeSeparator: ' → ' },
         disable: room.unavailable_dates || [],
         onChange: function (selectedDates) {
-          document.getElementById('reserve-btn').disabled = selectedDates.length !== 2;
+          document.getElementById('reserve-btn').disabled =
+            selectedDates.length !== 2;
         },
       });
 
@@ -121,19 +126,27 @@ document.addEventListener('DOMContentLoaded', () => {
       updateDisplay();
 
       document.getElementById('minus-btn').addEventListener('click', () => {
-        if (guestCount > 1) { guestCount--; updateDisplay(); }
+        if (guestCount > 1) {
+          guestCount--;
+          updateDisplay();
+        }
       });
       document.getElementById('plus-btn').addEventListener('click', () => {
-        if (guestCount < maxGuests) { guestCount++; updateDisplay(); }
+        if (guestCount < maxGuests) {
+          guestCount++;
+          updateDisplay();
+        }
       });
-
+      ////
       document.getElementById('reserve-btn').addEventListener('click', () => {
         if (!checkUser()) return;
         const confirmation = confirm(
-          '보증금을 입금해야 최종적으로 예약이 완료됩니다.\n보증금은 환불이 되지 않습니다.\n\n예약을 신청하시겠습니까?'
+          '보증금을 입금해야 최종적으로 예약이 완료됩니다.\n보증금은 환불이 되지 않습니다.\n\n예약을 신청하시겠습니까?',
         );
         if (confirmation) {
-          alert('예약 신청이 완료되었습니다 (상태: 대기중).\n예약 내역 페이지로 이동합니다.');
+          alert(
+            '예약 신청이 완료되었습니다 (상태: 대기중).\n예약 내역 페이지로 이동합니다.',
+          );
           window.location.href = 'reservation.html';
         }
       });

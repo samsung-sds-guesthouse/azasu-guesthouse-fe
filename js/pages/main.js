@@ -1,12 +1,15 @@
 document.addEventListener('DOMContentLoaded', () => {
-  sessionStorage.setItem('searchParams', JSON.stringify({ startDate: '', endDate: '', guests: 1 }));
+  sessionStorage.setItem(
+    'searchParams',
+    JSON.stringify({ startDate: '', endDate: '', guests: 1 }),
+  );
 
   const datePicker = flatpickr('#date-range', {
     mode: 'range',
     dateFormat: 'Y-m-d',
     minDate: 'today',
     locale: {
-      rangeSeparator: ' → ',
+      rangeSeparator: ' ~ ', //→ 에서 바꿨는데 확인해보기
     },
   });
 
@@ -21,91 +24,135 @@ document.addEventListener('DOMContentLoaded', () => {
     guestCountSelect.appendChild(option);
   }
 
-  const CATEGORIES = {
-    '스탠다드': '스탠다드 · Standard',
-    '디럭스':   '디럭스 · Deluxe',
-    '스위트':   '스위트 · Suite',
-  };
+  function getRoomImageSource(picture) {
+    if (!picture) {
+      return 'https://via.placeholder.com/900x600?text=Room';
+    }
 
-  function renderRooms(rooms) {
+    const trimmedPicture = picture.trim();
+
+    if (
+      trimmedPicture.startsWith('data:') ||
+      trimmedPicture.startsWith('http://') ||
+      trimmedPicture.startsWith('https://')
+    ) {
+      return trimmedPicture;
+    }
+
+    if (trimmedPicture.startsWith('/')) {
+      if (trimmedPicture.startsWith('/9j/')) {
+        return `data:image/jpeg;base64,${trimmedPicture}`;
+      }
+
+      return trimmedPicture;
+    }
+
+    if (trimmedPicture.startsWith('iVBOR')) {
+      return `data:image/png;base64,${trimmedPicture}`;
+    }
+
+    if (trimmedPicture.startsWith('R0lGOD')) {
+      return `data:image/gif;base64,${trimmedPicture}`;
+    }
+
+    if (trimmedPicture.startsWith('UklGR')) {
+      return `data:image/webp;base64,${trimmedPicture}`;
+    }
+
+    return `data:image/jpeg;base64,${trimmedPicture}`;
+  }
+
+  function renderRooms(response) {
+    const rooms = response?.data?.rooms || response?.rooms || [];
+
     roomListContainer.innerHTML = '';
 
     if (rooms.length === 0) {
       roomListContainer.innerHTML = `
         <div class="empty-state">
           <p>조건에 맞는 객실이 없습니다.</p>
-          <p>날짜나 인원을 변경해 다시 검색해보세요.</p>
+          <p>날짜와 인원을 변경해 다시 검색해보세요.</p>
         </div>`;
       return;
     }
 
-    // Group by category, maintain order
-    const order = ['스탠다드', '디럭스', '스위트'];
-    const grouped = {};
-    rooms.forEach(r => {
-      const cat = r.category || '기타';
-      if (!grouped[cat]) grouped[cat] = [];
-      grouped[cat].push(r);
-    });
-
     let cardIndex = 0;
 
-    order.forEach(cat => {
-      if (!grouped[cat] || grouped[cat].length === 0) return;
+    rooms.forEach((room) => {
+      const isReverse = cardIndex % 2 !== 0;
+      cardIndex++;
 
-      const divider = document.createElement('div');
-      divider.className = 'room-category';
-      divider.innerHTML = `<span class="room-category-label">${CATEGORIES[cat] || cat}</span>`;
-      roomListContainer.appendChild(divider);
+      const roomId = room.room_id;
+      const roomName = room.room_name || '';
+      const capacity = Number(room.capacity || 0);
+      const price = Number(room.price || 0);
+      const imageSrc = getRoomImageSource(room.picture || '');
 
-      grouped[cat].forEach(room => {
-        const isReverse = cardIndex % 2 !== 0;
-        cardIndex++;
+      const card = document.createElement('a');
+      card.href = `room-detail.html?id=${roomId}`;
+      card.className = `room-item${isReverse ? ' reverse' : ''}`;
 
-        const card = document.createElement('a');
-        card.href = `room-detail.html?id=${room.id}`;
-        card.className = `room-item${isReverse ? ' reverse' : ''}`;
-
-        card.innerHTML = `
-          <div class="room-img-wrap">
-            <img src="${escapeHTML(room.image)}" alt="${escapeHTML(room.name)}" loading="lazy" />
-            <span class="room-img-badge">${escapeHTML(room.size || '')} · 최대 ${room.max_guests}인</span>
-          </div>
-          <div class="room-info">
-            <p class="room-number">${escapeHTML(room.name_en || '')}</p>
-            <h3 class="room-name">${escapeHTML(room.name)}</h3>
-            <p class="room-desc">${escapeHTML(room.description || '')}</p>
-            <div class="room-amenities">
-              ${(room.amenities || []).map(a => `<span class="amenity-tag">${escapeHTML(a)}</span>`).join('')}
+      card.innerHTML = `
+        <div class="room-img-wrap">
+          <img src="${escapeHTML(imageSrc)}" alt="${escapeHTML(roomName)}" loading="lazy" />
+          
+        </div>
+        <div class="room-info">
+          <p class="room-number">Room ${roomId}</p>
+          <h3 class="room-name">${escapeHTML(roomName)}</h3>
+          <p class="room-desc"></p>
+          <div class="room-amenities"></div>
+          <div class="room-meta">
+            <div class="room-meta-detail">
+              <span>최대 ${capacity}인</span>
             </div>
-            <div class="room-meta">
-              <div class="room-meta-detail">
-                <span>최대 ${room.max_guests}인 · ${escapeHTML(room.size || '')} · ${escapeHTML(room.floor || '')}</span>
-              </div>
-              <div class="room-price">
-                <p class="room-price-label">1박 요금</p>
-                <span class="room-price-amount">${room.price.toLocaleString()}원</span>
-              </div>
+            <div class="room-price">
+              <p class="room-price-label">1박 요금</p>
+              <span class="room-price-amount">${price.toLocaleString()}원</span>
             </div>
-            <span class="room-cta">자세히 보기</span>
           </div>
-        `;
+          <span class="room-cta">자세히 보기</span>
+        </div>
+      `;
 
-        roomListContainer.appendChild(card);
-      });
+      roomListContainer.appendChild(card);
     });
   }
 
-  getRooms().then(renderRooms);
+  function loadRooms(searchParams = {}) {
+    getRooms(searchParams)
+      .then(renderRooms)
+      .catch(() => {
+        roomListContainer.innerHTML = `
+          <div class="empty-state">
+            <p>객실 정보를 불러오지 못했습니다.</p>
+            <p>잠시 후 다시 시도해주세요.</p>
+          </div>`;
+      });
+  }
+
+  loadRooms();
 
   searchBtn.addEventListener('click', () => {
     const dates = datePicker.selectedDates;
     const searchParams = {
+      check_in: dates[0] ? formatDate(dates[0]) : '',
+      check_out: dates[1] ? formatDate(dates[1]) : '',
+      guest_count: guestCountSelect.value,
       startDate: dates[0] ? formatDate(dates[0]) : '',
-      endDate:   dates[1] ? formatDate(dates[1]) : '',
+      endDate: dates[1] ? formatDate(dates[1]) : '',
       guests: guestCountSelect.value,
     };
-    sessionStorage.setItem('searchParams', JSON.stringify(searchParams));
-    getRooms(searchParams).then(renderRooms);
+
+    sessionStorage.setItem(
+      'searchParams',
+      JSON.stringify({
+        startDate: searchParams.startDate,
+        endDate: searchParams.endDate,
+        guests: searchParams.guests,
+      }),
+    );
+
+    loadRooms(searchParams);
   });
 });

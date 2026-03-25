@@ -155,8 +155,19 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
         }
 
+        if (currentPassword === newPassword) {
+            alert('현재 비밀번호와 새 비밀번호는 다르게 입력해주세요.');
+            return;
+        }
+
         if (newPassword !== newPasswordConfirm) {
             alert('새 비밀번호와 비밀번호 확인이 일치하지 않습니다.');
+            return;
+        }
+
+        const confirmation = confirm('비밀번호를 변경하시겠습니까?');
+
+        if (!confirmation) {
             return;
         }
 

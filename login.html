@@ -16,23 +16,43 @@
         <p class="auth-logo">AZASU GUESTHOUSE</p>
         <p class="auth-subtitle">전통과 휴식이 머무는 공간으로 다시 돌아오세요</p>
 
-        <form id="login-form">
-          <input
-            type="text"
-            id="username"
-            placeholder="아이디"
-            required
-            minlength="8"
-            maxlength="15"
-          />
-          <input
-            type="password"
-            id="password"
-            placeholder="비밀번호"
-            required
-            minlength="12"
-            maxlength="20"
-          />
+        <form id="login-form" novalidate>
+          <div class="form-group">
+            <label for="username">아이디</label>
+            <input
+              type="text"
+              id="username"
+              placeholder="아이디"
+              required
+              minlength="8"
+              maxlength="15"
+              aria-describedby="login-username-message"
+            />
+            <p
+              id="login-username-message"
+              class="field-message"
+              aria-live="polite"
+              hidden
+            ></p>
+          </div>
+          <div class="form-group">
+            <label for="password">비밀번호</label>
+            <input
+              type="password"
+              id="password"
+              placeholder="비밀번호"
+              required
+              minlength="12"
+              maxlength="20"
+              aria-describedby="login-password-message"
+            />
+            <p
+              id="login-password-message"
+              class="field-message"
+              aria-live="polite"
+              hidden
+            ></p>
+          </div>
           <button type="submit">로그인</button>
         </form>
 

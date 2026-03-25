@@ -16,8 +16,9 @@
         <p class="auth-logo">AZASU GUESTHOUSE</p>
         <p class="auth-subtitle">회원가입 후 아자수 게스트하우스의 예약 서비스를 이용해보세요</p>
 
-        <form id="signup-form">
+        <form id="signup-form" novalidate>
           <div class="form-group">
+            <label for="username">아이디</label>
             <input
               type="text"
               id="username"
@@ -25,10 +26,18 @@
               required
               minlength="8"
               maxlength="15"
+              aria-describedby="signup-username-message"
             />
             <button type="button" id="check-username-btn">중복 체크</button>
+            <p
+              id="signup-username-message"
+              class="field-message"
+              aria-live="polite"
+              hidden
+            ></p>
           </div>
           <div class="form-group">
+            <label for="password">비밀번호</label>
             <input
               type="password"
               id="password"
@@ -36,9 +45,18 @@
               required
               minlength="12"
               maxlength="20"
+              aria-describedby="signup-password-message"
             />
+            <p
+              id="signup-password-message"
+              class="field-message"
+              aria-live="polite"
+            >
+              비밀번호는 12자 이상 20자 이하로 입력해주세요.
+            </p>
           </div>
           <div class="form-group">
+            <label for="password-confirm">비밀번호 확인</label>
             <input
               type="password"
               id="password-confirm"
@@ -46,6 +64,7 @@
               required
               minlength="12"
               maxlength="20"
+              aria-describedby="password-confirm-message"
             />
             <p
               id="password-confirm-message"
@@ -55,6 +74,7 @@
             ></p>
           </div>
           <div class="form-group">
+            <label for="name">이름</label>
             <input
               type="text"
               id="name"
@@ -62,29 +82,59 @@
               required
               minlength="1"
               maxlength="30"
+              aria-describedby="signup-name-message"
             />
+            <p
+              id="signup-name-message"
+              class="field-message"
+              aria-live="polite"
+              hidden
+            ></p>
           </div>
           <div class="form-group">
+            <label for="phone">전화번호</label>
             <input
               type="tel"
               id="phone"
               placeholder="전화번호 (예시 : 01012345678)"
               required
               pattern="010\d{8}"
+              aria-describedby="signup-phone-message"
             />
             <button type="button" id="send-sms-btn">인증번호 발송</button>
+            <p
+              id="signup-phone-message"
+              class="field-message"
+              aria-live="polite"
+              hidden
+            ></p>
           </div>
           <div class="form-group" id="sms-verify-group" style="display: none">
+            <label for="sms-code">인증번호</label>
             <input
               type="text"
               id="sms-code"
               placeholder="인증번호 6자리 입력"
               inputmode="numeric"
               maxlength="6"
+              aria-describedby="signup-sms-message"
             />
             <span id="sms-timer">5:00</span>
             <button type="button" id="verify-sms-btn">인증 확인</button>
+            <p
+              id="signup-sms-message"
+              class="field-message"
+              aria-live="polite"
+              hidden
+            ></p>
           </div>
+          <p
+            id="signup-status-message"
+            class="field-message auth-status-message"
+            aria-live="polite"
+          >
+            아이디 중복 확인과 전화번호 인증을 완료하면 회원가입할 수 있습니다.
+          </p>
           <button type="submit" id="signup-btn" disabled>회원가입</button>
         </form>
       </section>

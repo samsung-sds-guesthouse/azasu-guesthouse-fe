@@ -15,6 +15,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const verifySmsBtn = document.getElementById("verify-sms-btn");
   const smsTimer = document.getElementById("sms-timer");
   const signupBtn = document.getElementById("signup-btn");
+  const usernameMessage = document.getElementById("signup-username-message");
+  const passwordMessage = document.getElementById("signup-password-message");
+  const nameMessage = document.getElementById("signup-name-message");
+  const phoneMessage = document.getElementById("signup-phone-message");
+  const smsMessage = document.getElementById("signup-sms-message");
+  const statusMessage = document.getElementById("signup-status-message");
 
   let isUsernameChecked = false;
   let isSmsVerified = false;
@@ -69,9 +75,32 @@ document.addEventListener("DOMContentLoaded", () => {
     return !smsExpiresAt || Date.now() > smsExpiresAt;
   }
 
+  function setFieldMessage(element, message, type = "error") {
+    element.textContent = message;
+    element.hidden = !message;
+    element.classList.toggle("is-success", type === "success");
+    element.classList.toggle("is-muted", type === "muted");
+  }
+
+  function setFieldValidity(input, isValid) {
+    if (isValid) {
+      input.removeAttribute("aria-invalid");
+      return;
+    }
+
+    input.setAttribute("aria-invalid", "true");
+  }
+
   function resetUsernameCheck() {
     isUsernameChecked = false;
     checkedUsername = "";
+    setFieldMessage(
+      usernameMessage,
+      getTrimmedValue(usernameInput)
+        ? "아이디가 변경되었습니다. 다시 중복 확인해주세요."
+        : "",
+      "muted",
+    );
   }
 
   function stopSmsTimer() {
@@ -89,6 +118,11 @@ document.addEventListener("DOMContentLoaded", () => {
     smsVerifyGroup.style.display = "none";
     smsTimer.textContent = "5:00";
     stopSmsTimer();
+    setFieldMessage(
+      smsMessage,
+      smsRequestedPhone ? "전화번호가 변경되어 다시 인증이 필요합니다." : "",
+      "muted",
+    );
 
     if (!keepCount) {
       smsSendCount = 0;
@@ -138,6 +172,111 @@ document.addEventListener("DOMContentLoaded", () => {
     const isSmsStateValid =
       isSmsVerified && verifiedPhone === phone && !isSmsExpired();
 
+    if (!loginId) {
+      setFieldMessage(usernameMessage, "");
+    } else if (!isValidLoginId(loginId)) {
+      setFieldMessage(
+        usernameMessage,
+        "아이디는 8자 이상 15자 이하로 입력해주세요.",
+      );
+    } else if (isUsernameStateValid) {
+      setFieldMessage(usernameMessage, "사용 가능한 아이디입니다.", "success");
+    } else if (!isUsernameChecked) {
+      setFieldMessage(
+        usernameMessage,
+        "아이디 중복 확인을 진행해주세요.",
+        "muted",
+      );
+    }
+
+    if (!password) {
+      setFieldMessage(
+        passwordMessage,
+        "비밀번호는 12자 이상 20자 이하로 입력해주세요.",
+        "muted",
+      );
+    } else if (!isValidPassword(password)) {
+      setFieldMessage(
+        passwordMessage,
+        "비밀번호는 12자 이상 20자 이하로 입력해주세요.",
+      );
+    } else {
+      setFieldMessage(passwordMessage, "사용 가능한 비밀번호 길이입니다.", "success");
+    }
+
+    if (!name) {
+      setFieldMessage(nameMessage, "");
+    } else if (!isValidName(name)) {
+      setFieldMessage(nameMessage, "이름은 1자 이상 30자 이하로 입력해주세요.");
+    } else {
+      setFieldMessage(nameMessage, "");
+    }
+
+    if (!phone) {
+      setFieldMessage(phoneMessage, "");
+    } else if (!isValidPhone(phone)) {
+      setFieldMessage(
+        phoneMessage,
+        "전화번호는 010으로 시작하는 11자리 숫자로 입력해주세요.",
+      );
+    } else if (isSmsStateValid) {
+      setFieldMessage(phoneMessage, "전화번호 인증이 완료되었습니다.", "success");
+    } else if (smsRequestedPhone === phone) {
+      setFieldMessage(
+        phoneMessage,
+        "인증번호를 입력하고 인증 확인을 눌러주세요.",
+        "muted",
+      );
+    } else {
+      setFieldMessage(
+        phoneMessage,
+        "전화번호 인증을 진행해주세요.",
+        "muted",
+      );
+    }
+
+    if (!smsCodeInput.value.trim()) {
+      if (!isSmsStateValid && smsRequestedPhone === phone && !isSmsExpired()) {
+        setFieldMessage(smsMessage, "인증번호 6자리를 입력해주세요.", "muted");
+      } else if (!smsRequestedPhone) {
+        setFieldMessage(smsMessage, "");
+      }
+    } else if (!SMS_CODE_PATTERN.test(smsCodeInput.value.trim())) {
+      setFieldMessage(smsMessage, "인증번호 6자리를 정확히 입력해주세요.");
+    }
+
+    const statusParts = [];
+    if (!isUsernameStateValid) {
+      statusParts.push("아이디 중복 확인");
+    }
+    if (!isSmsStateValid) {
+      statusParts.push("전화번호 인증");
+    }
+
+    if (statusParts.length === 0) {
+      setFieldMessage(statusMessage, "회원가입 준비가 완료되었습니다.", "success");
+    } else {
+      setFieldMessage(
+        statusMessage,
+        `${statusParts.join(", ")} 후 회원가입할 수 있습니다.`,
+        "muted",
+      );
+    }
+
+    setFieldValidity(usernameInput, isValidLoginId(loginId) || loginId.length === 0);
+    setFieldValidity(passwordInput, isValidPassword(password) || password.length === 0);
+    setFieldValidity(
+      passwordConfirmInput,
+      passwordConfirm.length === 0 || isPasswordMatch,
+    );
+    setFieldValidity(nameInput, isValidName(name) || name.length === 0);
+    setFieldValidity(phoneInput, isValidPhone(phone) || phone.length === 0);
+    setFieldValidity(
+      smsCodeInput,
+      smsCodeInput.value.trim().length === 0 ||
+        SMS_CODE_PATTERN.test(smsCodeInput.value.trim()),
+    );
+
     signupBtn.disabled = !(
       isFieldValid &&
       isUsernameStateValid &&
@@ -182,6 +321,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const response = await checkUsernameAvailability(loginId);
       isUsernameChecked = response.available;
       checkedUsername = loginId;
+      setFieldMessage(usernameMessage, "사용 가능한 아이디입니다.", "success");
       alert("사용 가능한 아이디입니다.");
       validateForm();
     } catch (error) {
@@ -228,6 +368,11 @@ document.addEventListener("DOMContentLoaded", () => {
       smsExpiresAt = Date.now() + SMS_EXPIRE_MS;
       smsVerifyGroup.style.display = "flex";
       startSmsTimer();
+      setFieldMessage(
+        smsMessage,
+        "인증번호를 입력하고 5분 안에 인증을 완료해주세요.",
+        "muted",
+      );
       validateForm();
       alert("인증번호가 발송되었습니다. 5분 이내에 인증을 완료해주세요.");
     } catch (error) {
@@ -288,9 +433,11 @@ document.addEventListener("DOMContentLoaded", () => {
       isSmsVerified = true;
       verifiedPhone = phone;
       stopSmsTimer();
+      setFieldMessage(smsMessage, "인증이 완료되었습니다.", "success");
       alert("인증되었습니다.");
       validateForm();
     } catch (error) {
+      setFieldMessage(smsMessage, "인증번호를 다시 확인해주세요.");
       alert("인증에 실패했습니다.");
     } finally {
       verifySmsBtn.disabled = false;
@@ -370,7 +517,9 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   usernameInput.addEventListener("input", () => {
-    resetUsernameCheck();
+    if (checkedUsername !== getTrimmedValue(usernameInput)) {
+      resetUsernameCheck();
+    }
     validateForm();
   });
 

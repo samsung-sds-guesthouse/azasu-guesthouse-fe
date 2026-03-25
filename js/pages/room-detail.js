@@ -71,9 +71,6 @@ document.addEventListener('DOMContentLoaded', () => {
           <img src="${escapeHTML(roomImage)}" alt="${escapeHTML(roomName)}" />
           <div class="detail-hero-overlay"></div>
           <div class="detail-hero-title">
-            <span style="font-size:0.7rem;letter-spacing:0.3em;color:var(--gold-light);display:block;margin-bottom:0.7rem;text-transform:uppercase;">
-              Room ${room.room_id}
-            </span>
             <h1>${escapeHTML(roomName)}</h1>
           </div>
         </div>
@@ -127,12 +124,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 보증금 입금 완료 후 예약이 확정됩니다.
               </p>
             </div>
-
-            <div style="padding:1.5rem 0;font-size:0.78rem;color:var(--text-muted);line-height:1.8;">
-              <p style="margin-bottom:0.3rem;">· 최대 인원: <strong>${roomCapacity}명</strong></p>
-              <p style="margin-bottom:0.3rem;">· 객실 번호: <strong>${escapeHTML(String(room.room_id || '-'))}</strong></p>
-              <p>· 이용 정책: <strong>${escapeHTML(roomPolicy || '-')}</strong></p>
-            </div>
           </div>
         </div>
       `;
@@ -143,7 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const datePicker = flatpickr('#date-range', {
         mode: 'range',
         dateFormat: 'Y-m-d',
-        minDate: 'today',
+        minDate: new Date().fp_incr(1),
         maxDate: new Date().fp_incr(30), // 오늘 + 30일
         locale: { rangeSeparator: ' ~ ' },
         disable: reservedDates,

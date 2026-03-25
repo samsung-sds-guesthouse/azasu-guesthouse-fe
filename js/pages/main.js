@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const datePicker = flatpickr('#date-range', {
     mode: 'range',
     dateFormat: 'Y-m-d',
-    minDate: 'today',
+    minDate: new Date().fp_incr(1),
     maxDate: new Date().fp_incr(30), // 오늘 + 30일
     locale: {
       rangeSeparator: ' ~ ', //→ 에서 바꿨는데 확인해보기

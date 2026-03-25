@@ -50,7 +50,8 @@ document.addEventListener('DOMContentLoaded', () => {
   getRoomDetail(roomId)
     .then((response) => {
       const room = response?.data?.room || response?.room;
-      const reservedDates = response?.data?.reserved_dates || response?.reserved_dates || [];
+      const reservedDates =
+        response?.data?.reserved_dates || response?.reserved_dates || [];
 
       if (!room) {
         throw new Error('객실 정보를 찾을 수 없습니다.');
@@ -143,6 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
         mode: 'range',
         dateFormat: 'Y-m-d',
         minDate: 'today',
+        maxDate: new Date().fp_incr(30),
         locale: { rangeSeparator: ' ~ ' },
         disable: reservedDates,
         onChange(selectedDates) {

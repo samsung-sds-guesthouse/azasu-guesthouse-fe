@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     mode: 'range',
     dateFormat: 'Y-m-d',
     minDate: 'today',
+    maxDate: new Date().fp_incr(30),
     locale: {
       rangeSeparator: ' ~ ', //→ 에서 바꿨는데 확인해보기
     },

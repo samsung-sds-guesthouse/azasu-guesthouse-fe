@@ -1,36 +1,40 @@
-document.addEventListener('DOMContentLoaded', async () => {
-    checkAdmin();
+document.addEventListener("DOMContentLoaded", async () => {
+  checkAdmin();
 
-    const reservationListContainer = document.getElementById('admin-reservation-list');
-    let currentReservations = [];
+  const reservationListContainer = document.getElementById(
+    "admin-reservation-list",
+  );
+  let currentReservations = [];
 
-    const RESERVATION_STATUS_LABELS = {
-        PENDING: '대기',
-        CONFIRMED: '확인',
-        CANCELLED: '취소',
-    };
+  const RESERVATION_STATUS_LABELS = {
+    PENDING: "대기",
+    CONFIRMED: "확인",
+    CANCELLED: "취소",
+  };
 
-    function renderMessage(message) {
-        reservationListContainer.innerHTML = `<p>${escapeHTML(message)}</p>`;
-    }
+  function renderMessage(message) {
+    reservationListContainer.innerHTML = `<p>${escapeHTML(message)}</p>`;
+  }
 
-    function renderReservationStatusOptions(selectedStatus) {
-        return Object.entries(RESERVATION_STATUS_LABELS)
-            .map(([status, label]) => `
-                <option value="${status}" ${selectedStatus === status ? 'selected' : ''}>
+  function renderReservationStatusOptions(selectedStatus) {
+    return Object.entries(RESERVATION_STATUS_LABELS)
+      .map(
+        ([status, label]) => `
+                <option value="${status}" ${selectedStatus === status ? "selected" : ""}>
                     ${label}
                 </option>
-            `)
-            .join('');
+            `,
+      )
+      .join("");
+  }
+
+  function renderReservations(reservations) {
+    if (reservations.length === 0) {
+      renderMessage("예약 내역이 없습니다.");
+      return;
     }
 
-    function renderReservations(reservations) {
-        if (reservations.length === 0) {
-            renderMessage('예약 내역이 없습니다.');
-            return;
-        }
-
-        reservationListContainer.innerHTML = `
+    reservationListContainer.innerHTML = `
             <table>
                 <thead>
                     <tr>
@@ -44,9 +48,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                     </tr>
                 </thead>
                 <tbody>
-                    ${reservations.map((reservation) => `
+                    ${reservations
+                      .map(
+                        (reservation) => `
                         <tr data-reservation-id="${reservation.id}">
-                            <td>${escapeHTML(reservation.roomName)}</td>
+                            <td>${escapeHTML(reservation.room_name)}</td>
                             <td>${reservation.guestCount}</td>
                             <td>${reservation.totalPrice.toLocaleString()}원</td>
                             <td>${escapeHTML(reservation.dateText)}</td>
@@ -61,72 +67,85 @@ document.addEventListener('DOMContentLoaded', async () => {
                                 </select>
                             </td>
                         </tr>
-                    `).join('')}
+                    `,
+                      )
+                      .join("")}
                 </tbody>
             </table>
         `;
+  }
+
+  async function loadReservations() {
+    renderMessage("예약 목록을 불러오는 중...");
+
+    try {
+      const reservationData = await getAllReservations();
+      currentReservations = (reservationData.reservations || []).map(
+        normalizeAdminReservation,
+      );
+      renderReservations(currentReservations);
+    } catch (error) {
+      renderMessage(error.message || "예약 목록을 불러오지 못했습니다.");
+    }
+  }
+
+  async function handleReservationStatusChange(select) {
+    const reservationId = select.dataset.id;
+    const nextStatus = select.value;
+    const previousStatus = select.dataset.previousStatus || "";
+    const targetReservation = currentReservations.find(
+      (reservation) => String(reservation.id) === String(reservationId),
+    );
+    const room_name =
+      targetReservation?.room_name || `Reservation ID ${reservationId}`;
+
+    if (nextStatus === previousStatus) {
+      return;
     }
 
-    async function loadReservations() {
-        renderMessage('예약 목록을 불러오는 중...');
-
-        try {
-            const reservationData = await getAllReservations();
-            currentReservations = (reservationData.reservations || []).map(normalizeAdminReservation);
-            renderReservations(currentReservations);
-        } catch (error) {
-            renderMessage(error.message || '예약 목록을 불러오지 못했습니다.');
-        }
+    if (
+      !window.confirm(
+        `"${room_name}" 예약 상태를 ${previousStatus}에서 ${nextStatus}(으)로 변경하시겠습니까?`,
+      )
+    ) {
+      select.value = previousStatus;
+      return;
     }
 
-    async function handleReservationStatusChange(select) {
-        const reservationId = select.dataset.id;
-        const nextStatus = select.value;
-        const previousStatus = select.dataset.previousStatus || '';
-        const targetReservation = currentReservations.find((reservation) => String(reservation.id) === String(reservationId));
-        const roomName = targetReservation?.roomName || `Reservation ID ${reservationId}`;
+    select.disabled = true;
 
-        if (nextStatus === previousStatus) {
-            return;
-        }
+    try {
+      await updateReservationStatus(reservationId, nextStatus);
+      if (targetReservation) {
+        targetReservation.status = nextStatus;
+      }
+      select.dataset.previousStatus = nextStatus;
+      alert(
+        `예약 ID ${reservationId}의 상태가 ${nextStatus}(으)로 변경되었습니다.`,
+      );
+    } catch (error) {
+      select.value = previousStatus;
+      if (targetReservation) {
+        targetReservation.status = previousStatus;
+      }
+      alert(error.message || "예약 상태 변경에 실패했습니다.");
+    } finally {
+      select.disabled = false;
+    }
+  }
 
-        if (!window.confirm(`"${roomName}" 예약 상태를 ${previousStatus}에서 ${nextStatus}(으)로 변경하시겠습니까?`)) {
-            select.value = previousStatus;
-            return;
-        }
-
-        select.disabled = true;
-
-        try {
-            await updateReservationStatus(reservationId, nextStatus);
-            if (targetReservation) {
-                targetReservation.status = nextStatus;
-            }
-            select.dataset.previousStatus = nextStatus;
-            alert(`예약 ID ${reservationId}의 상태가 ${nextStatus}(으)로 변경되었습니다.`);
-        } catch (error) {
-            select.value = previousStatus;
-            if (targetReservation) {
-                targetReservation.status = previousStatus;
-            }
-            alert(error.message || '예약 상태 변경에 실패했습니다.');
-        } finally {
-            select.disabled = false;
-        }
+  reservationListContainer.addEventListener("change", async (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLSelectElement)) {
+      return;
     }
 
-    reservationListContainer.addEventListener('change', async (event) => {
-        const target = event.target;
-        if (!(target instanceof HTMLSelectElement)) {
-            return;
-        }
+    if (!target.matches("select[data-id]")) {
+      return;
+    }
 
-        if (!target.matches('select[data-id]')) {
-            return;
-        }
+    await handleReservationStatusChange(target);
+  });
 
-        await handleReservationStatusChange(target);
-    });
-
-    await loadReservations();
+  await loadReservations();
 });

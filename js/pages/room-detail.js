@@ -47,11 +47,36 @@ document.addEventListener('DOMContentLoaded', () => {
     return `data:image/jpeg;base64,${trimmedPicture}`;
   }
 
-  getRoomDetail(roomId)
+  function getRoomPayload(response) {
+    return response?.data?.room || response?.room || null;
+  }
+
+  function getReservedDates(response) {
+    return response?.data?.reserved_dates || response?.reserved_dates || [];
+  }
+
+  async function loadRoomDetail(targetRoomId) {
+    const response = await getRoomDetail(targetRoomId);
+    const room = getRoomPayload(response);
+
+    if (room) {
+      return response;
+    }
+
+    const inactiveResponse = await getInactiveRoomDetail(targetRoomId);
+    const inactiveRoom = getRoomPayload(inactiveResponse);
+
+    if (inactiveRoom) {
+      return inactiveResponse;
+    }
+
+    throw new Error('조회된 객실이 없습니다.');
+  }
+
+  loadRoomDetail(roomId)
     .then((response) => {
-      const room = response?.data?.room || response?.room;
-      const reservedDates =
-        response?.data?.reserved_dates || response?.reserved_dates || [];
+      const room = getRoomPayload(response);
+      const reservedDates = getReservedDates(response);
 
       if (!room) {
         throw new Error('객실 정보를 찾을 수 없습니다.');

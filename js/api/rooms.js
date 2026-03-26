@@ -38,6 +38,12 @@ async function getRoomDetail(roomId) {
   });
 }
 
+async function getInactiveRoomDetail(roomId) {
+  return fetchApi(`/api/v1/rooms/inactive/${roomId}`, {
+    method: 'GET',
+  });
+}
+
 async function createReservation({ room_id, check_in, check_out, guest_count }) {
   return fetchApi('/api/v1/reservations', {
     method: 'POST',

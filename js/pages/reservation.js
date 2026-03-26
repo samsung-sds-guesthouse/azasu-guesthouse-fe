@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const reservationList = document.getElementById('reservation-list');
   const paginationContainer = document.getElementById('pagination');
   const EMPTY_MESSAGE = '예약 내역이 없습니다.';
+  let currentPage = 1;
 
   function formatDateTime(value) {
     if (!value) {
@@ -176,14 +177,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         try {
           cancelButton.disabled = true;
           await cancelReservation(reservationId);
-
-          const reservationItem = cancelButton.closest('.reservation-item');
-          const statusElement = reservationItem.querySelector(
-            '.reservation-status',
-          );
-          statusElement.textContent = '취소';
-          statusElement.className = 'reservation-status status-cancelled';
-          cancelButton.remove();
+          await loadReservations(currentPage);
           alert('예약이 취소되었습니다.');
         } catch (error) {
           alert('예약 취소에 실패했습니다.');
@@ -195,6 +189,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   async function loadReservations(page) {
     try {
+      currentPage = page;
       const result = await getMyReservations(page);
 
       if (!result.list.length) {

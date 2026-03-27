@@ -40,10 +40,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     let cardIndex = 0;
-
+    let room_num = 0;
     rooms.forEach((room) => {
       const isReverse = cardIndex % 2 !== 0;
       cardIndex++;
+      room_num++;
 
       const roomId = room.room_id;
       const roomName = room.room_name || '';
@@ -61,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
           
         </div>
         <div class="room-info">
-          <p class="room-number">Room ${roomId}</p>
+          <p class="room-number">Room ${room_num}</p>
           <h3 class="room-name">${escapeHTML(roomName)}</h3>
           <p class="room-desc"></p>
           <div class="room-amenities"></div>

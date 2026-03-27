@@ -111,7 +111,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             <h2>객실 정보</h2>
             <div class="detail-amenity-grid">
-              <div class="detail-amenity-item">객실 번호: ${escapeHTML(String(room.room_id || '-'))}</div>
               <div class="detail-amenity-item">최대 인원: ${escapeHTML(String(roomCapacity || '-'))}명</div>
               <div class="detail-amenity-item">1박 요금: ${escapeHTML(roomPrice.toLocaleString())}원</div>
             </div>

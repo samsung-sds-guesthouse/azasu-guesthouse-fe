@@ -99,7 +99,7 @@ azasu-guesthouse-fe/
 
 기본 URL: `http://localhost:8080/api/v1`
 
-모든 인증 요청은 `Authorization: Bearer <token>` 헤더를 포함합니다.
+모든 인증 요청은 쿠키 기반 세션(JSESSIONID)으로 처리됩니다.
 
 ### 인증
 
@@ -153,14 +153,11 @@ azasu-guesthouse-fe/
 2. **프론트엔드 실행** — 로컬 HTTP 서버로 파일을 제공합니다.
 
    ```bash
-   # Python 사용 시
-   python -m http.server 3000
-
-   # Node.js npx 사용 시
-   npx serve .
+   # VS Code Live Server (권장)
+   # index.html에서 우클릭 → Open with Live Server
    ```
 
-3. 브라우저에서 `http://localhost:3000` 접속
+3. 브라우저에서 `http://localhost:5500` 접속
 
 > `index.html`을 브라우저에서 직접 열면 CORS 문제가 발생할 수 있으므로 로컬 서버를 통해 실행하는 것을 권장합니다.
 
@@ -170,11 +167,10 @@ azasu-guesthouse-fe/
 
 | Key | 설명 |
 |-----|------|
-| `token` | Bearer 인증 토큰 |
 | `user` | 사용자 정보 `{ login_id, name, role }` |
 | `searchParams` | 객실 검색 필터 캐시 |
 
-`role`이 `ADMIN`인 경우 관리자 페이지에 접근할 수 있습니다.
+인증은 서버 세션(JSESSIONID 쿠키)으로 유지되며, `role`이 `ADMIN`인 경우 관리자 페이지에 접근할 수 있습니다.
 
 ---
 
